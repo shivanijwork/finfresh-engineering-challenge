@@ -5,6 +5,7 @@ import cors from "cors";
 
 // Routes
 import authRoutes from "./routes/authRoutes.js";
+import transactionRoutes from "./routes/transactionRoutes.js";
 
 dotenv.config();
 
@@ -23,6 +24,7 @@ app.get("/", (req, res) => {
 
 // Auth Routes
 app.use("/api", authRoutes);
+app.use("/api/transactions", transactionRoutes);
 
 // Start Server
 const startServer = async () => {
