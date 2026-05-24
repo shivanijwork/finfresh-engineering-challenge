@@ -1,0 +1,23 @@
+{
+ "name": "finance-tracker-backend",
+ "version": "1.0.0",
+ "description": "FinFresh backend API",
+ "type": "module",
+ "main": "src/app.js",
+ "scripts": {
+  "start": "node src/app.js",
+  "dev": "nodemon src/app.js"
+ },
+ "dependencies": {
+  "bcryptjs": "^3.0.3",
+  "cors": "^2.8.6",
+  "dotenv": "^17.4.2",
+  "express": "^5.2.1",
+  "jsonwebtoken": "^9.0.3",
+  "mongodb": "^7.2.0",
+  "mongoose": "^9.6.2"
+ },
+ "devDependencies": {
+  "nodemon": "^3.1.14"
+ }
+}
