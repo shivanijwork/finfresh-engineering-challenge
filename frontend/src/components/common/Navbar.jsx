@@ -4,11 +4,7 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 
-const navLinks = [
-    { href: "/dashboard", label: "Dashboard" },
-    { href: "/transactions", label: "Transactions" },
-    { href: "/financial-health", label: "Health Score", badge: "NEW" },
-];
+
 
 export default function Navbar() {
 
@@ -60,7 +56,7 @@ export default function Navbar() {
                     className="flex items-center gap-2 flex-shrink-0 group"
                 >
 
-                    <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary text-white text-sm font-bold shadow-md">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary text-black text-sm font-bold shadow-md">
                         F
                     </div>
 
@@ -71,30 +67,7 @@ export default function Navbar() {
                 </Link>
 
                 {/* Desktop nav */}
-                <ul className="hidden md:flex items-center gap-1">
-
-                    {navLinks.map(({ href, label, badge }) => (
-
-                        <li key={href}>
-
-                            <Link
-                                href={href}
-                                className="flex items-center gap-2 rounded-lg px-3.5 py-2 text-sm font-medium text-gray-500 hover:bg-primary-light hover:text-primary"
-                            >
-                                {label}
-
-                                {badge && (
-                                    <span className="rounded-full bg-primary px-1.5 py-0.5 text-[10px] font-semibold text-white">
-                                        {badge}
-                                    </span>
-                                )}
-
-                            </Link>
-
-                        </li>
-                    ))}
-
-                </ul>
+                
 
                 {/* Right side */}
                 <div className="hidden md:flex items-center gap-3">
@@ -176,18 +149,7 @@ export default function Navbar() {
 
                 <div className="mx-auto max-w-6xl flex flex-col gap-2 px-6 py-4">
 
-                    {navLinks.map(({ href, label }) => (
-
-                        <Link
-                            key={href}
-                            href={href}
-                            onClick={() => setOpen(false)}
-                            className="rounded-lg px-3 py-2 text-gray-600 hover:bg-primary-light hover:text-primary"
-                        >
-                            {label}
-                        </Link>
-
-                    ))}
+                  
 
                     <div className="h-px bg-orange-100 my-2" />
 

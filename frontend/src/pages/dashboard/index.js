@@ -3,6 +3,8 @@ import ApiRoutes from "../api/ApiRoutes";
 import toast from "react-hot-toast";
 import Layout from "@/components/common/Layout";
 import Link from "next/link";
+import CardLoader from "@/components/loaders/CardLoader";
+import ListLoader from "@/components/loaders/ListLoader";
 
 export default function Dashboard() {
 
@@ -64,10 +66,30 @@ export default function Dashboard() {
         return (
             <Layout>
 
-                <div className="min-h-screen flex items-center justify-center">
-                    <h1 className="text-2xl font-bold">
-                        Loading...
-                    </h1>
+                <div className="min-h-screen bg-gray-50 p-6">
+
+                    <div className="space-y-8">
+
+                        {/* Top cards */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+
+                            <CardLoader />
+                            <CardLoader />
+                            <CardLoader />
+                            <CardLoader />
+
+                        </div>
+
+                        {/* Bottom loaders */}
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+                            <ListLoader />
+                            <ListLoader />
+
+                        </div>
+
+                    </div>
+
                 </div>
 
             </Layout>

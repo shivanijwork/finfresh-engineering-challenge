@@ -5,17 +5,7 @@ export default function Footer() {
         
         <p>© {new Date().getFullYear()} FinFresh. All rights reserved.</p>
 
-        <div className="flex gap-4 mt-3 md:mt-0">
-          <a href="#" className="hover:text-[var(--primary)]">
-            Privacy
-          </a>
-          <a href="#" className="hover:text-[var(--primary)]">
-            Terms
-          </a>
-          <a href="#" className="hover:text-[var(--primary)]">
-            Support
-          </a>
-        </div>
+        
       </div>
     </footer>
   );
