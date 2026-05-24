@@ -1,186 +1,64 @@
 # FinFresh Frontend
 
-Frontend for **FinFresh** — a personal finance tracking application built using **Next.js**, **React**, and **Tailwind CSS**.
-
-Users can:
-
-* Register & Login
-* Add transactions
-* View dashboard summary
-* Track income & expenses
-* Check financial health score
-* Get financial suggestions
+A modern financial tracking frontend built using Next.js and Tailwind CSS.
 
 ---
 
-# Tech Stack
+## Tech Stack
 
-* Next.js
-* React.js
-* Tailwind CSS
-* Axios
-* React Hot Toast
-
----
-
-# Features
-
-## Authentication
-
-* User Registration
-* User Login
-* JWT Token Storage
-
-## Dashboard
-
-* Total Income
-* Total Expenses
-* Savings
-* Savings Rate
-* Financial Health Score
-* Suggestions Section
-* Categories Breakdown
-
-## Transactions
-
-* Add Transaction
-* Income & Expense Tracking
-* Category Based Tracking
-
-## UI Features
-
-* Responsive Design
-* Reusable Components
-* Skeleton Loaders
-* Clean Dashboard UI
+- Next.js
+- React.js
+- Tailwind CSS
+- Axios
+- React Hot Toast
 
 ---
 
-# Folder Structure
+## Features
 
-```bash
+- User Authentication
+- Dashboard Summary
+- Financial Health Score
+- Add Transactions
+- Suggestions System
+- Skeleton Loaders
+- Responsive UI
+
+---
+
+## Folder Structure
+
 src/
-│
+├── api/
 ├── components/
-│   ├── common/
-│   └── loaders/
-│
 ├── pages/
-│   ├── api/
-│   ├── dashboard/
-│   ├── login/
-│   ├── register/
-│   └── transaction/
-│
 ├── styles/
-│
-└── utils/
-```
 
 ---
 
-# Installation
-
-Clone the repository:
-
-```bash
-git clone <frontend-repo-url>
-```
-
-Install dependencies:
+## Installation
 
 ```bash
 npm install
-```
 
-Run development server:
-
-```bash
+Run Development Server
 npm run dev
-```
 
-Frontend will run on:
+Frontend runs on:
 
-```bash
 http://localhost:3000
-```
+Environment Variables
 
----
+Create a .env.local file:
 
-# Environment Variables
-
-Create a `.env.local` file:
-
-```env
 NEXT_PUBLIC_API_URL=http://localhost:5000/api
-```
-
----
-
-# API Integration
-
-Axios instance is configured in:
-
-```bash
-src/pages/api/Api.js
-```
-
-API routes are managed in:
-
-```bash
-src/pages/api/ApiRoutes.js
-```
-
----
-
-# Pages
-
-| Page               | Description       |
-| ------------------ | ----------------- |
-| `/register`        | User registration |
-| `/login`           | User login        |
-| `/dashboard`       | Finance dashboard |
-| `/transaction/add` | Add transaction   |
-
----
-
-# Components
-
-## Common Components
-
-* Navbar
-* Layout
-
-## Loaders
-
-* CardLoader
-* ListLoader
-
----
-
-# Financial Health Calculation
-
-The dashboard calculates:
-
-* Savings Rate
-* Expense Ratio
-* Debt Ratio
-* Investment Ratio
-
-Based on these metrics, a financial health score is generated.
-
----
-
-# Future Improvements
-
-* Charts & Analytics
-* Transaction History
-* Edit/Delete Transactions
-* Dark Mode
-* Pagination
-* Export Reports
-* Better Authentication Handling
-
----
-
-
+Pages
+/login
+/signup
+/dashboard
+/transaction/add
+UI Components
+Navbar
+Layout
+Card Loaders
+Dashboard Cards
