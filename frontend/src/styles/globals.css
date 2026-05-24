@@ -1,0 +1,42 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* =========================
+   ROOT VARIABLES
+========================= */
+:root {
+  --primary: #EC6623;
+  --secondary: #42BE38;
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+/* =========================
+   BASE STYLES
+========================= */
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: "Inter", sans-serif;
+}
+
+/* =========================
+   FONTS
+========================= */
+.font-inter {
+  font-family: "Inter", sans-serif;
+}
+
+.font-poppins {
+  font-family: "Poppins", sans-serif;
+}
+
+
+.container {
+  padding-right: 20px;
+  padding-left: 20px;
+}
