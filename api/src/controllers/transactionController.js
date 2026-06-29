@@ -218,3 +218,29 @@ export const getFinancialHealth = catchAsync(async (req, res) => {
         result
     );
 });
+
+export const getCurrentDayTransactions = catchAsync(async (req, res) => {
+
+    const userId = req.user.id;
+
+    const startTime = new Date();
+    startTime.setHours(0, 0, 0, 0);
+
+    const endTime = new Date();
+    endTime.setHours(23, 59, 59, 999);
+
+    const transactions = await Transaction.find({
+        userId,
+        createdAt: {
+            $gte: startTime,
+            $lte: endTime,
+        },
+    });
+
+    return successResponse(
+        res,
+        "Current day transactions fetched successfully",
+        200,
+        { data: transactions }
+    );
+});

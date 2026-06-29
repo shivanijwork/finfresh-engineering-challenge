@@ -23,8 +23,8 @@ app.get("/", (req, res) => {
 });
 
 // Auth Routes
-app.use("/api", authRoutes);
-app.use("/api/transactions", transactionRoutes);
+app.use("", authRoutes);
+app.use("/transactions", transactionRoutes);
 
 // Start Server
 const startServer = async () => {

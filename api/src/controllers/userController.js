@@ -1,13 +1,7 @@
 import jwt from "jsonwebtoken";
-
 import User from "../models/User.js";
-
 import catchAsync from "../utils/catchAsync.js";
-
-import {
-  successResponse,
-  errorResponse,
-} from "../utils/errorHandling.js";
+import {successResponse,errorResponse} from "../utils/errorHandling.js";
 
 // Generate JWT
 const generateToken = (userId) => {
@@ -19,8 +13,6 @@ const generateToken = (userId) => {
     }
   );
 };
-
-// ================= REGISTER =================
 
 export const registerUser = catchAsync(async (req, res) => {
 
@@ -70,8 +62,6 @@ export const registerUser = catchAsync(async (req, res) => {
     }
   );
 });
-
-// ================= LOGIN =================
 
 export const loginUser = catchAsync(async (req, res) => {
 

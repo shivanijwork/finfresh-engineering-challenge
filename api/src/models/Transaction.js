@@ -50,5 +50,4 @@ transactionSchema.index({
 });
 
 const Transaction = mongoose.model("Transaction", transactionSchema);
-
 export default Transaction;
