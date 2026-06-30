@@ -39,16 +39,29 @@ export default function DashboardScreen() {
 
         try {
 
+            setLoading(true);
+
             const token =
                 await AsyncStorage.getItem(
                     "token"
                 );
 
+            console.log(
+                "TOKEN",
+                token
+            );
+
             if (!token) {
+
+                setLoading(false);
 
                 Alert.alert(
                     "Error",
-                    "Please login again"
+                    "Login again"
+                );
+
+                navigation.navigate(
+                    "Login"
                 );
 
                 return;
@@ -60,23 +73,42 @@ export default function DashboardScreen() {
                     token
                 );
 
+            console.log(
+                "SUMMARY",
+                summaryRes.data
+            );
+
             const healthRes =
                 await getFinancialHealth(
                     token
                 );
 
+            console.log(
+                "HEALTH",
+                healthRes.data
+            );
+
             setSummary(
-                summaryRes.data.data
+                summaryRes?.data?.data
+                ||
+                {}
             );
 
             setFinancialHealth(
-                healthRes.data.data
+                healthRes?.data?.data
+                ||
+                {}
             );
 
         }
         catch (error) {
 
-            console.log(error);
+            console.log(
+                "DASHBOARD ERROR",
+                error?.response?.data
+                ||
+                error
+            );
 
             Alert.alert(
                 "Error",
@@ -135,46 +167,47 @@ bg-[#F7F8FA]
     return (
 
         <ScrollView
-            className="
-flex-1
-bg-[#F7F8FA]
-"
+            className="flex-1 bg-[#FAFAFA]"
             showsVerticalScrollIndicator={false}
         >
 
-            <View
-                className="p-6"
-            >
+            <View className="px-6 pt-16 pb-32">
 
-                {/* HEADER */}
+                {/* Header */}
 
-                <Text
-                    className="
-text-4xl
-font-bold
+                <View className="mb-8">
+
+                    <Text
+                        className="
+text-[36px]
+font-black
+text-black
 "
-                >
+                    >
+                        FinFresh
+                    </Text>
 
-                    Dashboard
-
-                </Text>
-
-                <Text
-                    className="
-text-gray-500
-mt-2
-mb-7
+                    <Text
+                        className="
+text-gray-400
+text-base
+mt-1
 "
-                >
+                    >
+                        Your money at a glance
+                    </Text>
 
-                    Track your finances
+                </View>
 
-                </Text>
 
-                {/* CARDS */}
+                {/* Top Stats */}
 
                 <View
-                    className="gap-4"
+                    className="
+flex-row
+flex-wrap
+justify-between
+"
                 >
 
                     <Card
@@ -192,16 +225,12 @@ mb-7
                     <Card
                         title="Savings"
                         value={`₹${summary?.savings || 0}`}
-                        subtitle={`Rate: ${summary?.savingsRate || 0}%`}
+                        subtitle={`${summary?.savingsRate || 0}% rate`}
                     />
 
                     <Card
-                        title="Health Score"
-                        value={
-                            financialHealth?.score
-                            ||
-                            0
-                        }
+                        title="Health"
+                        value={`${financialHealth?.score || 0}`}
                         subtitle={
                             financialHealth?.category
                         }
@@ -210,91 +239,102 @@ mb-7
 
                 </View>
 
-                {/* CATEGORY */}
+
+                {/* Categories */}
 
                 <View
                     className="
 bg-white
-rounded-3xl
-p-5
-mt-7
+mt-8
+rounded-[30px]
+p-6
 "
                 >
 
                     <Text
                         className="
-text-xl
+text-lg
 font-bold
 mb-5
 "
                     >
-
                         Categories
-
                     </Text>
 
                     {
+                        Object.keys(
+                            summary?.categories || {}
+                        ).length
 
-                        summary?.categories
-                        &&
+                            ?
 
-                        Object.entries(
-                            summary.categories
-                        ).map(
-                            ([key, value]) => (
+                            Object.entries(
+                                summary.categories
+                            ).map(
+                                ([key, value]) => (
 
-                                <View
-                                    key={key}
-                                    className="
+                                    <View
+                                        key={key}
+                                        className="
 flex-row
 justify-between
-py-3
+py-4
 border-b
 border-gray-100
 "
-                                >
-
-                                    <Text>
-
-                                        {key}
-
-                                    </Text>
-
-                                    <Text
-                                        className="font-semibold"
                                     >
 
-                                        ₹{value}
+                                        <Text
+                                            className="
+text-gray-700
+"
+                                        >
+                                            {key}
+                                        </Text>
 
-                                    </Text>
+                                        <Text
+                                            className="
+font-semibold
+"
+                                        >
+                                            ₹{value}
+                                        </Text>
 
-                                </View>
+                                    </View>
 
-                            )
+                                ))
 
-                        )
+                            :
+
+                            <Text
+                                className="
+text-gray-400
+"
+                            >
+                                No transactions yet
+                            </Text>
 
                     }
 
                 </View>
 
-                {/* SUGGESTIONS */}
+
+                {/* Suggestions */}
 
                 <View
                     className="
 bg-white
-rounded-3xl
-p-5
+rounded-[30px]
 mt-6
-mb-10
+p-6
 "
                 >
 
                     <Text
                         className="
-text-xl
+text-lg
 font-bold
-mb-5
+mb-4
 "
                     >
 
@@ -313,19 +353,27 @@ mb-5
                             financialHealth
                                 .suggestions
                                 .map(
-                                    (item, index) => (
+                                    (
+                                        item,
+                                        index
+                                    ) => (
 
                                         <View
                                             key={index}
                                             className="
 bg-orange-50
 rounded-2xl
-p-4
 mb-3
+p-4
 "
                                         >
 
-                                            <Text>
+                                            <Text
+                                                className="
+leading-6
+text-gray-700
+"
+                                            >
 
                                                 {item}
 
@@ -333,16 +381,17 @@ mb-3
 
                                         </View>
 
-                                    )
-                                )
+                                    ))
 
                             :
 
                             <Text
-                                className="text-gray-400"
+                                className="
+text-gray-400
+"
                             >
 
-                                No suggestions
+                                Looking healthy ✨
 
                             </Text>
 
@@ -350,36 +399,44 @@ mb-3
 
                 </View>
 
-                <TouchableOpacity
-                    className="
-bg-black
-rounded-2xl
-p-5
-mb-8
-"
-                    onPress={() =>
-                        navigation.navigate(
-                            "AddTransaction"
-                        )}
-                >
+            </View>
 
-                    <Text
-                        className="
+
+            {/* Floating Button */}
+
+            <TouchableOpacity
+                onPress={() =>
+                    navigation.navigate(
+                        "AddTransaction"
+                    )
+                }
+                className="
+absolute
+bottom-10
+left-6
+right-6
+bg-orange-500
+rounded-full
+py-5
+"
+            >
+
+                <Text
+                    className="
 text-white
 text-center
 font-bold
+text-lg
 "
-                    >
+                >
 
-                        + Add Transaction
+                    ＋ Add Transaction
 
-                    </Text>
+                </Text>
 
-                </TouchableOpacity>
+            </TouchableOpacity>
 
-            </View>
-
-        </ScrollView >
+        </ScrollView>
 
     );
 
@@ -397,23 +454,26 @@ function Card({
         <View
             className="
 bg-white
-rounded-3xl
-p-6
+w-[48%]
+rounded-[28px]
+p-5
+mb-4
 "
         >
 
             <Text
-                className="text-gray-500"
+                className="
+text-gray-400
+text-sm
+"
             >
-
                 {title}
-
             </Text>
 
             <Text
                 className={`
-text-3xl
-font-bold
+text-[28px]
+font-black
 mt-3
 ${color}
 `}
@@ -433,6 +493,7 @@ ${color}
                     className="
 text-gray-400
 mt-2
+text-sm
 "
                 >
 

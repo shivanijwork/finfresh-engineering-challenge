@@ -125,87 +125,167 @@ export default function RegisterScreen() {
     return (
 
         <KeyboardAvoidingView
-            className="flex-1 bg-white"
-            behavior={Platform.OS === "ios" ? "padding" : "height"}  >
+            className="flex-1 bg-[#F5F8F3]"
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+        >
+
             <ScrollView
-                contentContainerStyle={{ flexGrow: 1 }}
+                contentContainerStyle={{
+                    flexGrow: 1,
+                    justifyContent: "center",
+                }}
                 keyboardShouldPersistTaps="handled"
             >
 
-
-
                 <View
                     className="
-flex-1 
-justify-center
-bg-gray-100
-px-6
+px-7
+py-10
 "
                 >
+
+                    {/* Logo */}
+
+                    <View
+                        className="
+items-center
+mb-10
+"
+                    >
+
+                        <View
+                            className="
+w-24
+h-24
+rounded-full
+bg-orange-500
+justify-center
+items-center
+mb-4
+shadow
+"
+                        >
+
+                            <Text
+                                className="
+text-white
+text-4xl
+font-bold
+"
+                            >
+                                ₹
+                            </Text>
+
+                        </View>
+
+                        <Text
+                            className="
+text-4xl
+font-extrabold
+text-[#233420]
+"
+                        >
+                            FinFresh
+                        </Text>
+
+                        <Text
+                            className="
+text-[#7C8A77]
+mt-2
+text-center
+"
+                        >
+                            Start your smart finance journey
+                        </Text>
+
+                    </View>
+
+
+                    {/* Form Card */}
 
                     <View
                         className="
 bg-white
-rounded-3xl
+rounded-[32px]
 p-8
+shadow
 "
                     >
 
                         <Text
                             className="
-text-4xl
+text-3xl
 font-bold
-text-center
+text-[#233420]
+mb-2
 "
                         >
 
-                            FinFresh
+                            Create Account
 
                         </Text>
 
                         <Text
                             className="
-text-center
-text-gray-500
-mt-2
+text-[#889282]
 mb-8
 "
                         >
 
-                            Create your account
+                            Track • Save • Grow
 
                         </Text>
 
+
+                        {/* Name */}
+
                         <TextInput
-                            placeholder="Name"
+                            placeholder="Full Name"
+                            placeholderTextColor="#A0A0A0"
                             value={formData.name}
                             onChangeText={(v) =>
-                                handleChange("name", v)
+                                handleChange(
+                                    "name",
+                                    v
+                                )
                             }
                             className="
-border
-rounded-xl
-p-4
+bg-[#F5F8F3]
+rounded-2xl
+p-5
 mb-4
 "
                         />
+
+
+                        {/* Email */}
 
                         <TextInput
                             placeholder="Email"
+                            placeholderTextColor="#A0A0A0"
+                            keyboardType="email-address"
+                            autoCapitalize="none"
                             value={formData.email}
                             onChangeText={(v) =>
-                                handleChange("email", v)
+                                handleChange(
+                                    "email",
+                                    v
+                                )
                             }
                             className="
-border
-rounded-xl
-p-4
+bg-[#F5F8F3]
+rounded-2xl
+p-5
 mb-4
 "
                         />
 
+
+                        {/* Password */}
+
                         <TextInput
                             placeholder="Password"
+                            placeholderTextColor="#A0A0A0"
                             secureTextEntry
                             value={formData.password}
                             onChangeText={(v) =>
@@ -215,25 +295,29 @@ mb-4
                                 )
                             }
                             className="
-border
-rounded-xl
-p-4
-mb-5
+bg-[#F5F8F3]
+rounded-2xl
+p-5
+mb-6
 "
                         />
+
+
+                        {/* Register Button */}
 
                         <TouchableOpacity
                             onPress={handleSubmit}
                             disabled={loading}
                             className="
-bg-black
-rounded-xl
-p-4
+bg-orange-500
+rounded-2xl
+py-5
 "
                         >
 
                             {
                                 loading
+
                                     ?
 
                                     <ActivityIndicator
@@ -244,13 +328,14 @@ p-4
 
                                     <Text
                                         className="
-text-white
 text-center
+text-white
 font-bold
+text-lg
 "
                                     >
 
-                                        Register
+                                        Create Account
 
                                     </Text>
 
@@ -258,18 +343,37 @@ font-bold
 
                         </TouchableOpacity>
 
+
+                        {/* Login */}
+
                         <TouchableOpacity
-                            onPress={() => navigation.navigate("Login") }
+                            onPress={() =>
+                                navigation.navigate(
+                                    "Login"
+                                )
+                            }
                         >
 
                             <Text
                                 className="
 text-center
-mt-6
+mt-7
+text-[#7C8A77]
 "
                             >
 
-                                Already have account?
+                                Already have an account?
+
+                                <Text
+                                    className="
+text-orange-500
+font-bold
+"
+                                >
+
+                                    Login
+
+                                </Text>
 
                             </Text>
 
@@ -280,8 +384,8 @@ mt-6
                 </View>
 
             </ScrollView>
-        </KeyboardAvoidingView>
 
+        </KeyboardAvoidingView>
 
     );
 

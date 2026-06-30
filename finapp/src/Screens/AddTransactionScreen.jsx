@@ -14,6 +14,7 @@ import {
 import AsyncStorage
     from "@react-native-async-storage/async-storage";
 
+
 import {
     useNavigation,
 } from "@react-navigation/native";
@@ -192,7 +193,7 @@ export default function AddTransactionScreen() {
         <SafeAreaView
             className="
 flex-1
-bg-[#F7F8FA]
+bg-[#FAFAFA]
 "
         >
 
@@ -203,37 +204,52 @@ bg-[#F7F8FA]
                 <View
                     className="
 px-6
-py-8
+pt-12
+pb-20
 "
                 >
 
-                    <Text
+                    {/* Header */}
+
+                    <View
                         className="
-text-4xl
-font-bold
-"
-                    >
-
-                        Add Transaction
-
-                    </Text>
-
-                    <Text
-                        className="
-text-gray-500
-mt-2
 mb-8
 "
                     >
 
-                        Track your money
+                        <Text
+                            className="
+text-[34px]
+font-black
+text-black
+"
+                        >
 
-                    </Text>
+                            New Transaction
+
+                        </Text>
+
+                        <Text
+                            className="
+text-gray-400
+mt-2
+text-base
+"
+                        >
+
+                            Track every rupee beautifully
+
+                        </Text>
+
+                    </View>
+
+
+                    {/* FORM CARD */}
 
                     <View
                         className="
 bg-white
-rounded-[30px]
+rounded-[34px]
 p-7
 "
                     >
@@ -241,7 +257,11 @@ p-7
                         {/* TYPE */}
 
                         <Text
-                            className="font-semibold mb-3"
+                            className="
+text-gray-400
+mb-4
+font-semibold
+"
                         >
 
                             Type
@@ -251,7 +271,9 @@ p-7
                         <View
                             className="
 flex-row
-mb-5
+flex-wrap
+justify-between
+mb-7
 "
                         >
 
@@ -262,61 +284,71 @@ mb-5
                                     "income",
                                     "investment",
                                     "debt",
-                                ]
-                                    .map(
-                                        (item) => (
+                                ].map(
+                                    (item) => (
 
-                                            <TouchableOpacity
-                                                key={item}
-                                                onPress={() =>
-                                                    update(
-                                                        "type",
-                                                        item
-                                                    )
-                                                }
-                                                className={`
-flex-1
-p-4
-mr-2
+                                        <TouchableOpacity
+                                            key={item}
+                                            onPress={() =>
+                                                update(
+                                                    "type",
+                                                    item
+                                                )
+                                            }
+                                            className={`
+w-[48%]
+mb-3
+py-4
 rounded-2xl
 ${formData.type === item
+                                                    ?
+
+                                                    "bg-orange-500"
+
+                                                    :
+
+                                                    "bg-[#F7F7F7]"
+                                                }
+`}
+                                        >
+
+                                            <Text
+                                                className={`
+text-center
+capitalize
+font-semibold
+${formData.type === item
                                                         ?
-                                                        "bg-orange-500"
+
+                                                        "text-white"
+
                                                         :
-                                                        "bg-gray-100"
+
+                                                        "text-gray-700"
                                                     }
 `}
                                             >
 
-                                                <Text
-                                                    className={`
-text-center
-font-semibold
-${formData.type === item
-                                                            ?
-                                                            "text-white"
-                                                            :
-                                                            "text-black"
-                                                        }
-`}
-                                                >
+                                                {item}
 
-                                                    {item}
+                                            </Text>
 
-                                                </Text>
-
-                                            </TouchableOpacity>
-
-                                        )
+                                        </TouchableOpacity>
 
                                     )
+
+                                )
 
                             }
 
                         </View>
 
+
+                        {/* INPUTS */}
+
                         <TextInput
                             placeholder="Category"
+                            placeholderTextColor="#A0A0A0"
                             value={formData.category}
                             onChangeText={(v) =>
                                 update(
@@ -325,15 +357,18 @@ ${formData.type === item
                                 )
                             }
                             className="
-bg-gray-100
+bg-[#F8F8F8]
 rounded-2xl
-p-5
+px-6
+py-5
 mb-4
 "
                         />
 
+
                         <TextInput
                             placeholder="Amount"
+                            placeholderTextColor="#A0A0A0"
                             keyboardType="numeric"
                             value={formData.amount}
                             onChangeText={(v) =>
@@ -343,15 +378,18 @@ mb-4
                                 )
                             }
                             className="
-bg-gray-100
+bg-[#F8F8F8]
 rounded-2xl
-p-5
+px-6
+py-5
 mb-4
 "
                         />
 
+
                         <TextInput
-                            placeholder="Date (YYYY-MM-DD)"
+                            placeholder="YYYY-MM-DD"
+                            placeholderTextColor="#A0A0A0"
                             value={formData.date}
                             onChangeText={(v) =>
                                 update(
@@ -360,15 +398,18 @@ mb-4
                                 )
                             }
                             className="
-bg-gray-100
+bg-[#F8F8F8]
 rounded-2xl
-p-5
+px-6
+py-5
 mb-4
 "
                         />
 
+
                         <TextInput
-                            placeholder="Description"
+                            placeholder="Description (optional)"
+                            placeholderTextColor="#A0A0A0"
                             multiline
                             numberOfLines={4}
                             textAlignVertical="top"
@@ -380,25 +421,25 @@ mb-4
                                 )
                             }
                             className="
-bg-gray-100
+bg-[#F8F8F8]
 rounded-2xl
-p-5
-h-32
-mb-6
+px-6
+py-5
+h-36
+mb-8
 "
                         />
 
+
+                        {/* BUTTON */}
+
                         <TouchableOpacity
-                            onPress={
-                                handleSubmit
-                            }
-                            disabled={
-                                loading
-                            }
+                            onPress={handleSubmit}
+                            disabled={loading}
                             className="
 bg-black
-rounded-2xl
-p-5
+rounded-full
+py-5
 "
                         >
 
@@ -423,7 +464,7 @@ text-lg
 "
                                     >
 
-                                        Add Transaction
+                                        Save Transaction
 
                                     </Text>
 
