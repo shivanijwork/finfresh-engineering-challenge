@@ -1,440 +1,449 @@
 import { useEffect, useState } from "react";
 
 import {
-View,
-Text,
-ScrollView,
-ActivityIndicator,
-TouchableOpacity,
-Alert,
+    View,
+    Text,
+    ScrollView,
+    ActivityIndicator,
+    TouchableOpacity,
+    Alert,
 } from "react-native";
 
 import AsyncStorage
-from "@react-native-async-storage/async-storage";
+    from "@react-native-async-storage/async-storage";
 
 import {
-getSummary,
-getFinancialHealth,
+    getSummary,
+    getFinancialHealth,
 } from "../services/api";
+import {
+    useNavigation,
+} from "@react-navigation/native";
 
-export default function DashboardScreen(){
+export default function DashboardScreen() {
 
-const [loading,setLoading]=
-useState(true);
+    const [loading, setLoading] =
+        useState(true);
 
-const [summary,setSummary]=
-useState(null);
+    const [summary, setSummary] =
+        useState(null);
 
-const [
-financialHealth,
-setFinancialHealth
-]=useState(null);
+    const [
+        financialHealth,
+        setFinancialHealth
+    ] = useState(null);
+    const navigation =
+        useNavigation();
 
-const fetchData=async()=>{
+    const fetchData = async () => {
 
-try{
+        try {
 
-const token=
-await AsyncStorage.getItem(
-"token"
-);
+            const token =
+                await AsyncStorage.getItem(
+                    "token"
+                );
 
-if(!token){
+            if (!token) {
 
-Alert.alert(
-"Error",
-"Please login again"
-);
+                Alert.alert(
+                    "Error",
+                    "Please login again"
+                );
 
-return;
+                return;
 
-}
+            }
 
-const summaryRes=
-await getSummary(
-token
-);
+            const summaryRes =
+                await getSummary(
+                    token
+                );
 
-const healthRes=
-await getFinancialHealth(
-token
-);
+            const healthRes =
+                await getFinancialHealth(
+                    token
+                );
 
-setSummary(
-summaryRes.data.data
-);
+            setSummary(
+                summaryRes.data.data
+            );
 
-setFinancialHealth(
-healthRes.data.data
-);
+            setFinancialHealth(
+                healthRes.data.data
+            );
 
-}
-catch(error){
+        }
+        catch (error) {
 
-console.log(error);
+            console.log(error);
 
-Alert.alert(
-"Error",
-error?.response?.data?.message
-||
-"Dashboard load failed"
-);
+            Alert.alert(
+                "Error",
+                error?.response?.data?.message
+                ||
+                "Dashboard load failed"
+            );
 
-}
-finally{
+        }
+        finally {
 
-setLoading(false);
+            setLoading(false);
 
-}
+        }
 
-};
+    };
 
-useEffect(()=>{
+    useEffect(() => {
 
-fetchData();
+        fetchData();
 
-},[]);
+    }, []);
 
-if(loading){
+    if (loading) {
 
-return(
+        return (
 
-<View
-className="
+            <View
+                className="
 flex-1
 justify-center
 items-center
 bg-[#F7F8FA]
 "
->
+            >
 
-<ActivityIndicator
-size="large"
-color="#f97316"
-/>
+                <ActivityIndicator
+                    size="large"
+                    color="#f97316"
+                />
 
-<Text
-className="mt-3"
->
+                <Text
+                    className="mt-3"
+                >
 
-Loading Dashboard...
+                    Loading Dashboard...
 
-</Text>
+                </Text>
 
-</View>
+            </View>
 
-);
+        );
 
-}
+    }
 
-return(
+    return (
 
-<ScrollView
-className="
+        <ScrollView
+            className="
 flex-1
 bg-[#F7F8FA]
 "
-showsVerticalScrollIndicator={false}
->
+            showsVerticalScrollIndicator={false}
+        >
 
-<View
-className="p-6"
->
+            <View
+                className="p-6"
+            >
 
-{/* HEADER */}
+                {/* HEADER */}
 
-<Text
-className="
+                <Text
+                    className="
 text-4xl
 font-bold
 "
->
+                >
 
-Dashboard
+                    Dashboard
 
-</Text>
+                </Text>
 
-<Text
-className="
+                <Text
+                    className="
 text-gray-500
 mt-2
 mb-7
 "
->
+                >
 
-Track your finances
+                    Track your finances
 
-</Text>
+                </Text>
 
-{/* CARDS */}
+                {/* CARDS */}
 
-<View
-className="gap-4"
->
+                <View
+                    className="gap-4"
+                >
 
-<Card
-title="Income"
-value={`₹${summary?.income||0}`}
-color="text-green-600"
-/>
+                    <Card
+                        title="Income"
+                        value={`₹${summary?.income || 0}`}
+                        color="text-green-600"
+                    />
 
-<Card
-title="Expense"
-value={`₹${summary?.expense||0}`}
-color="text-red-500"
-/>
+                    <Card
+                        title="Expense"
+                        value={`₹${summary?.expense || 0}`}
+                        color="text-red-500"
+                    />
 
-<Card
-title="Savings"
-value={`₹${summary?.savings||0}`}
-subtitle={`Rate: ${summary?.savingsRate||0}%`}
-/>
+                    <Card
+                        title="Savings"
+                        value={`₹${summary?.savings || 0}`}
+                        subtitle={`Rate: ${summary?.savingsRate || 0}%`}
+                    />
 
-<Card
-title="Health Score"
-value={
-financialHealth?.score
-||
-0
-}
-subtitle={
-financialHealth?.category
-}
-color="text-orange-500"
-/>
+                    <Card
+                        title="Health Score"
+                        value={
+                            financialHealth?.score
+                            ||
+                            0
+                        }
+                        subtitle={
+                            financialHealth?.category
+                        }
+                        color="text-orange-500"
+                    />
 
-</View>
+                </View>
 
-{/* CATEGORY */}
+                {/* CATEGORY */}
 
-<View
-className="
+                <View
+                    className="
 bg-white
 rounded-3xl
 p-5
 mt-7
 "
->
+                >
 
-<Text
-className="
+                    <Text
+                        className="
 text-xl
 font-bold
 mb-5
 "
->
+                    >
 
-Categories
+                        Categories
 
-</Text>
+                    </Text>
 
-{
+                    {
 
-summary?.categories
-&&
+                        summary?.categories
+                        &&
 
-Object.entries(
-summary.categories
-).map(
-([key,value])=>(
+                        Object.entries(
+                            summary.categories
+                        ).map(
+                            ([key, value]) => (
 
-<View
-key={key}
-className="
+                                <View
+                                    key={key}
+                                    className="
 flex-row
 justify-between
 py-3
 border-b
 border-gray-100
 "
->
+                                >
 
-<Text>
+                                    <Text>
 
-{key}
+                                        {key}
 
-</Text>
+                                    </Text>
 
-<Text
-className="font-semibold"
->
+                                    <Text
+                                        className="font-semibold"
+                                    >
 
-₹{value}
+                                        ₹{value}
 
-</Text>
+                                    </Text>
 
-</View>
+                                </View>
 
-)
+                            )
 
-)
+                        )
 
-}
+                    }
 
-</View>
+                </View>
 
-{/* SUGGESTIONS */}
+                {/* SUGGESTIONS */}
 
-<View
-className="
+                <View
+                    className="
 bg-white
 rounded-3xl
 p-5
 mt-6
 mb-10
 "
->
+                >
 
-<Text
-className="
+                    <Text
+                        className="
 text-xl
 font-bold
 mb-5
 "
->
+                    >
 
-Suggestions
+                        Suggestions
 
-</Text>
+                    </Text>
 
-{
+                    {
 
-financialHealth
-?.suggestions
-?.length
+                        financialHealth
+                            ?.suggestions
+                            ?.length
 
-?
+                            ?
 
-financialHealth
-.suggestions
-.map(
-(item,index)=>(
+                            financialHealth
+                                .suggestions
+                                .map(
+                                    (item, index) => (
 
-<View
-key={index}
-className="
+                                        <View
+                                            key={index}
+                                            className="
 bg-orange-50
 rounded-2xl
 p-4
 mb-3
 "
->
+                                        >
 
-<Text>
+                                            <Text>
 
-{item}
+                                                {item}
 
-</Text>
+                                            </Text>
 
-</View>
+                                        </View>
 
-)
-)
+                                    )
+                                )
 
-:
+                            :
 
-<Text
-className="text-gray-400"
->
+                            <Text
+                                className="text-gray-400"
+                            >
 
-No suggestions
+                                No suggestions
 
-</Text>
+                            </Text>
 
-}
+                    }
 
-</View>
+                </View>
 
-<TouchableOpacity
-className="
+                <TouchableOpacity
+                    className="
 bg-black
 rounded-2xl
 p-5
 mb-8
 "
->
+                    onPress={() =>
+                        navigation.navigate(
+                            "AddTransaction"
+                        )}
+                >
 
-<Text
-className="
+                    <Text
+                        className="
 text-white
 text-center
 font-bold
 "
->
+                    >
 
-+ Add Transaction
+                        + Add Transaction
 
-</Text>
+                    </Text>
 
-</TouchableOpacity>
+                </TouchableOpacity>
 
-</View>
+            </View>
 
-</ScrollView>
+        </ScrollView >
 
-);
+    );
 
 }
 
 function Card({
-title,
-value,
-subtitle,
-color="text-black",
-}){
+    title,
+    value,
+    subtitle,
+    color = "text-black",
+}) {
 
-return(
+    return (
 
-<View
-className="
+        <View
+            className="
 bg-white
 rounded-3xl
 p-6
 "
->
+        >
 
-<Text
-className="text-gray-500"
->
+            <Text
+                className="text-gray-500"
+            >
 
-{title}
+                {title}
 
-</Text>
+            </Text>
 
-<Text
-className={`
+            <Text
+                className={`
 text-3xl
 font-bold
 mt-3
 ${color}
 `}
->
+            >
 
-{value}
+                {value}
 
-</Text>
+            </Text>
 
-{
+            {
 
-subtitle
+                subtitle
 
-&&
+                &&
 
-<Text
-className="
+                <Text
+                    className="
 text-gray-400
 mt-2
 "
->
+                >
 
-{subtitle}
+                    {subtitle}
 
-</Text>
+                </Text>
 
-}
+            }
 
-</View>
+        </View>
 
-);
+    );
 
 }
