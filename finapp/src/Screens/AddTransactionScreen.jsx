@@ -23,6 +23,14 @@ import {
     createTransaction,
 } from "../services/api";
 
+import KeyboardWrapper
+    from "../../Components/KeyboardWrapper";
+
+import {
+    cardShadow,
+    darkButtonShadow,
+} from "../theme/theme";
+
 export default function AddTransactionScreen() {
 
     const navigation =
@@ -190,16 +198,7 @@ export default function AddTransactionScreen() {
 
     return (
 
-        <SafeAreaView
-            className="
-flex-1
-bg-[#FCFCFA]
-"
-        >
-
-            <ScrollView
-                showsVerticalScrollIndicator={false}
-            >
+        <KeyboardWrapper className="flex-1 bg-[#FCFCFA]">
 
                 <View
                     className="
@@ -262,6 +261,7 @@ leading-7
                     {/* CARD */}
 
                     <View
+                        style={cardShadow}
                         className="
 bg-white
 rounded-[34px]
@@ -419,6 +419,7 @@ ${formData.type === item
                             disabled={
                                 loading
                             }
+                            style={darkButtonShadow}
                             className="
 bg-[#111]
 rounded-full
@@ -460,9 +461,7 @@ text-lg
 
                 </View>
 
-            </ScrollView>
-
-        </SafeAreaView>
+        </KeyboardWrapper>
 
     );
 

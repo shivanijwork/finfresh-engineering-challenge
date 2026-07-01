@@ -20,6 +20,12 @@ import {
     useNavigation,
 } from "@react-navigation/native";
 
+import {
+    cardShadow,
+    heroShadow,
+    buttonShadow,
+} from "../theme/theme";
+
 export default function DashboardScreen() {
 
     const [loading, setLoading] =
@@ -141,13 +147,13 @@ export default function DashboardScreen() {
 flex-1
 justify-center
 items-center
-bg-[#F7F8FA]
+bg-[#FCFCFA]
 "
             >
 
                 <ActivityIndicator
                     size="large"
-                    color="#f97316"
+                    color="#30D5FF"
                 />
 
                 <Text
@@ -249,6 +255,7 @@ font-bold
                 {/* HERO */}
 
                 <View
+                    style={heroShadow}
                     className="
 mt-10
 bg-[#111]
@@ -343,6 +350,7 @@ justify-between
                 {/* CATEGORY */}
 
                 <View
+                    style={cardShadow}
                     className="
 bg-white
 rounded-[30px]
@@ -530,6 +538,7 @@ text-gray-500
                         "AddTransaction"
                     )
                 }
+                style={buttonShadow}
                 className="
 absolute
 bottom-8
@@ -570,6 +579,7 @@ function Card({
     return (
 
         <View
+            style={cardShadow}
             className="
 bg-white
 w-[48%]

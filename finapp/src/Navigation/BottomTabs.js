@@ -17,10 +17,15 @@ from "../Screens/AddTransactionScreen";
 import ProfileScreen
 from "../Screens/ProfileScreen";
 
+import { useSafeAreaInsets }
+from "react-native-safe-area-context";
+
 const Tab =
 createBottomTabNavigator();
 
 export default function BottomTabs() {
+
+const insets = useSafeAreaInsets();
 
 return (
 
@@ -38,18 +43,28 @@ tabBarStyle:{
 
 backgroundColor:"#090B14",
 
-height:80,
+height:70 + insets.bottom,
 
 borderTopWidth:0,
 
-paddingBottom:12,
+paddingBottom:insets.bottom + 8,
 
 paddingTop:10,
+
+shadowColor:"#000",
+
+shadowOffset:{ width:0, height:-6 },
+
+shadowOpacity:0.12,
+
+shadowRadius:16,
+
+elevation:12,
 
 },
 
 tabBarActiveTintColor:
-"#2FE6D2",
+"#30D5FF",
 
 tabBarInactiveTintColor:
 "#8A8F9D",

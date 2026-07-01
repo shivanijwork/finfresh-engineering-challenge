@@ -1,8 +1,21 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "http://192.168.29.82:5000",
+  baseURL: process.env.EXPO_PUBLIC_API_URL || "http://192.168.29.82:5000",
 });
+
+API.interceptors.request.use((config) => {
+  console.log("API →", (config.baseURL || "") + config.url, config.data);
+  return config;
+});
+
+API.interceptors.response.use(
+  (res) => res,
+  (err) => {
+    console.log("API ✗", err?.config?.url, err?.message, err?.response?.status);
+    return Promise.reject(err);
+  }
+);
 
 // AUTH
 export const registerUser = (data) =>
