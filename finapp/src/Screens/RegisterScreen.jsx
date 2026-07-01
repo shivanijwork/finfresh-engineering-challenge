@@ -125,99 +125,79 @@ export default function RegisterScreen() {
     return (
 
         <KeyboardAvoidingView
-            className="flex-1 bg-[#F5F8F3]"
-            behavior={Platform.OS === "ios" ? "padding" : "height"}
+            className="flex-1 bg-[#FCFCFA]"
+            behavior={
+                Platform.OS === "ios"
+                    ? "padding"
+                    : "height"
+            }
         >
 
             <ScrollView
                 contentContainerStyle={{
-                    flexGrow: 1,
-                    justifyContent: "center",
+                    flexGrow: 1
                 }}
                 keyboardShouldPersistTaps="handled"
             >
 
                 <View
                     className="
-px-7
-py-10
+flex-1
+px-6
+pt-16
+pb-10
 "
                 >
 
-                    {/* Logo */}
+                    {/* HEADER */}
 
-                    <View
-                        className="
-items-center
-mb-10
-"
-                    >
-
-                        <View
-                            className="
-w-24
-h-24
-rounded-full
-bg-orange-500
-justify-center
-items-center
-mb-4
-shadow
-"
-                        >
-
-                            <Text
-                                className="
-text-white
-text-4xl
-font-bold
-"
-                            >
-                                ₹
-                            </Text>
-
-                        </View>
+                    <View>
 
                         <Text
                             className="
 text-4xl
-font-extrabold
-text-[#233420]
+font-black
+text-[#D6A34F]
 "
                         >
-                            FinFresh
+
+                            FINFRESH
+
                         </Text>
 
                         <Text
                             className="
-text-[#7C8A77]
+text-gray-400
 mt-2
-text-center
 "
                         >
-                            Start your smart finance journey
+
+                            Your Finance Companion
+
                         </Text>
 
                     </View>
 
 
-                    {/* Form Card */}
+
+                    {/* CARD */}
 
                     <View
                         className="
 bg-white
-rounded-[32px]
+rounded-[36px]
 p-8
-shadow
+mt-14
+border
+border-[#EFEAE3]
 "
                     >
 
                         <Text
                             className="
 text-3xl
-font-bold
-text-[#233420]
-mb-2
+font-black
+text-[#111]
 "
                         >
 
@@ -227,21 +207,23 @@ mb-2
 
                         <Text
                             className="
-text-[#889282]
+text-gray-500
+mt-3
 mb-8
+leading-7
 "
                         >
 
-                            Track • Save • Grow
+                            Start tracking your finances
+                            with clarity.
 
                         </Text>
 
 
-                        {/* Name */}
 
                         <TextInput
                             placeholder="Full Name"
-                            placeholderTextColor="#A0A0A0"
+                            placeholderTextColor="#999"
                             value={formData.name}
                             onChangeText={(v) =>
                                 handleChange(
@@ -250,21 +232,18 @@ mb-8
                                 )
                             }
                             className="
-bg-[#F5F8F3]
+bg-[#FAFAFA]
 rounded-2xl
 p-5
 mb-4
+text-[#111]
 "
                         />
 
 
-                        {/* Email */}
-
                         <TextInput
                             placeholder="Email"
-                            placeholderTextColor="#A0A0A0"
-                            keyboardType="email-address"
-                            autoCapitalize="none"
+                            placeholderTextColor="#999"
                             value={formData.email}
                             onChangeText={(v) =>
                                 handleChange(
@@ -273,21 +252,23 @@ mb-4
                                 )
                             }
                             className="
-bg-[#F5F8F3]
+bg-[#FAFAFA]
 rounded-2xl
 p-5
 mb-4
+text-[#111]
 "
                         />
 
 
-                        {/* Password */}
 
                         <TextInput
                             placeholder="Password"
-                            placeholderTextColor="#A0A0A0"
+                            placeholderTextColor="#999"
                             secureTextEntry
-                            value={formData.password}
+                            value={
+                                formData.password
+                            }
                             onChangeText={(v) =>
                                 handleChange(
                                     "password",
@@ -295,27 +276,36 @@ mb-4
                                 )
                             }
                             className="
-bg-[#F5F8F3]
+bg-[#FAFAFA]
 rounded-2xl
 p-5
 mb-6
+text-[#111]
 "
                         />
 
 
-                        {/* Register Button */}
 
                         <TouchableOpacity
-                            onPress={handleSubmit}
-                            disabled={loading}
+
+                            onPress={
+                                handleSubmit
+                            }
+
+                            disabled={
+                                loading
+                            }
+
                             className="
-bg-orange-500
-rounded-2xl
+bg-[#30D5FF]
+rounded-full
 py-5
 "
+
                         >
 
                             {
+
                                 loading
 
                                     ?
@@ -344,40 +334,60 @@ text-lg
                         </TouchableOpacity>
 
 
-                        {/* Login */}
 
                         <TouchableOpacity
+
+                            className="
+mt-8
+"
+
                             onPress={() =>
+
                                 navigation.navigate(
                                     "Login"
                                 )
+
                             }
+
                         >
 
                             <Text
                                 className="
 text-center
-mt-7
-text-[#7C8A77]
+text-[#111]
+font-semibold
 "
                             >
 
                                 Already have an account?
-
-                                <Text
-                                    className="
-text-orange-500
-font-bold
-"
-                                >
-
-                                    Login
-
-                                </Text>
+                                Sign In
 
                             </Text>
 
                         </TouchableOpacity>
+
+                    </View>
+
+
+
+                    {/* FOOTER */}
+
+                    <View
+                        className="
+mt-10
+items-center
+"
+                    >
+
+                        <Text
+                            className="
+text-gray-400
+"
+                        >
+
+                            Your data stays yours.
+
+                        </Text>
 
                     </View>
 

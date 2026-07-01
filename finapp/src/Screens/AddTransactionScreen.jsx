@@ -193,7 +193,7 @@ export default function AddTransactionScreen() {
         <SafeAreaView
             className="
 flex-1
-bg-[#FAFAFA]
+bg-[#FCFCFA]
 "
         >
 
@@ -204,76 +204,92 @@ bg-[#FAFAFA]
                 <View
                     className="
 px-6
-pt-12
-pb-20
+pt-14
+pb-24
 "
                 >
 
-                    {/* Header */}
+                    {/* HEADER */}
 
                     <View
                         className="
-mb-8
+mb-10
 "
                     >
 
                         <Text
                             className="
-text-[34px]
+text-[#D6A34F]
+text-3xl
 font-black
-text-black
 "
                         >
 
-                            New Transaction
+                            FINFRESH
 
                         </Text>
 
                         <Text
                             className="
-text-gray-400
-mt-2
-text-base
+text-[38px]
+font-black
+mt-6
+text-[#111]
 "
                         >
 
-                            Track every rupee beautifully
+                            Add
+                            {"\n"}
+                            Transaction
+
+                        </Text>
+
+                        <Text
+                            className="
+text-gray-500
+mt-3
+leading-7
+"
+                        >
+
+                            Track your finances with clarity.
 
                         </Text>
 
                     </View>
 
 
-                    {/* FORM CARD */}
+                    {/* CARD */}
 
                     <View
                         className="
 bg-white
 rounded-[34px]
 p-7
+border
+border-[#EFEAE3]
 "
                     >
 
-                        {/* TYPE */}
-
                         <Text
                             className="
-text-gray-400
-mb-4
-font-semibold
+text-[#111]
+font-bold
+mb-5
 "
                         >
 
-                            Type
+                            Transaction Type
 
                         </Text>
+
 
                         <View
                             className="
 flex-row
 flex-wrap
 justify-between
-mb-7
+mb-8
 "
                         >
 
@@ -283,9 +299,10 @@ mb-7
                                     "expense",
                                     "income",
                                     "investment",
-                                    "debt",
-                                ].map(
-                                    (item) => (
+                                    "debt"
+                                ]
+
+                                    .map((item) => (
 
                                         <TouchableOpacity
                                             key={item}
@@ -299,15 +316,17 @@ mb-7
 w-[48%]
 mb-3
 py-4
-rounded-2xl
+rounded-[18px]
+
 ${formData.type === item
+
                                                     ?
 
-                                                    "bg-orange-500"
+                                                    "bg-[#30D5FF]"
 
                                                     :
 
-                                                    "bg-[#F7F7F7]"
+                                                    "bg-[#F7F7F5]"
                                                 }
 `}
                                         >
@@ -317,14 +336,16 @@ ${formData.type === item
 text-center
 capitalize
 font-semibold
+
 ${formData.type === item
+
                                                         ?
 
                                                         "text-white"
 
                                                         :
 
-                                                        "text-gray-700"
+                                                        "text-[#555]"
                                                     }
 `}
                                             >
@@ -335,9 +356,7 @@ ${formData.type === item
 
                                         </TouchableOpacity>
 
-                                    )
-
-                                )
+                                    ))
 
                             }
 
@@ -346,100 +365,65 @@ ${formData.type === item
 
                         {/* INPUTS */}
 
-                        <TextInput
-                            placeholder="Category"
-                            placeholderTextColor="#A0A0A0"
+                        <Input
+                            label="Category"
+                            placeholder="Food / Salary / Travel"
                             value={formData.category}
-                            onChangeText={(v) =>
+                            onChange={(v) =>
                                 update(
                                     "category",
                                     v
-                                )
-                            }
-                            className="
-bg-[#F8F8F8]
-rounded-2xl
-px-6
-py-5
-mb-4
-"
+                                )}
                         />
 
-
-                        <TextInput
-                            placeholder="Amount"
-                            placeholderTextColor="#A0A0A0"
+                        <Input
+                            label="Amount"
+                            placeholder="₹ 0"
                             keyboardType="numeric"
                             value={formData.amount}
-                            onChangeText={(v) =>
+                            onChange={(v) =>
                                 update(
                                     "amount",
                                     v
-                                )
-                            }
-                            className="
-bg-[#F8F8F8]
-rounded-2xl
-px-6
-py-5
-mb-4
-"
+                                )}
                         />
 
-
-                        <TextInput
+                        <Input
+                            label="Date"
                             placeholder="YYYY-MM-DD"
-                            placeholderTextColor="#A0A0A0"
                             value={formData.date}
-                            onChangeText={(v) =>
+                            onChange={(v) =>
                                 update(
                                     "date",
                                     v
-                                )
-                            }
-                            className="
-bg-[#F8F8F8]
-rounded-2xl
-px-6
-py-5
-mb-4
-"
+                                )}
                         />
 
-
-                        <TextInput
-                            placeholder="Description (optional)"
-                            placeholderTextColor="#A0A0A0"
+                        <Input
+                            label="Description"
+                            placeholder="Optional note"
                             multiline
-                            numberOfLines={4}
-                            textAlignVertical="top"
                             value={formData.description}
-                            onChangeText={(v) =>
+                            onChange={(v) =>
                                 update(
                                     "description",
                                     v
-                                )
-                            }
-                            className="
-bg-[#F8F8F8]
-rounded-2xl
-px-6
-py-5
-h-36
-mb-8
-"
+                                )}
                         />
 
 
-                        {/* BUTTON */}
-
                         <TouchableOpacity
-                            onPress={handleSubmit}
-                            disabled={loading}
+                            onPress={
+                                handleSubmit
+                            }
+                            disabled={
+                                loading
+                            }
                             className="
-bg-black
+bg-[#111]
 rounded-full
 py-5
+mt-6
 "
                         >
 
@@ -479,6 +463,64 @@ text-lg
             </ScrollView>
 
         </SafeAreaView>
+
+    );
+
+}
+
+function Input({
+    label,
+    placeholder,
+    value,
+    onChange,
+    multiline,
+    keyboardType
+}) {
+
+    return (
+
+        <View
+            className="
+mb-5
+"
+        >
+
+            <Text
+                className="
+text-gray-500
+mb-3
+font-semibold
+"
+            >
+
+                {label}
+
+            </Text>
+
+            <TextInput
+                placeholder={placeholder}
+                placeholderTextColor="#AAA"
+                value={value}
+                onChangeText={onChange}
+                multiline={multiline}
+                keyboardType={keyboardType}
+                numberOfLines={
+                    multiline
+                        ? 5
+                        : 1
+                }
+                textAlignVertical="top"
+                className="
+bg-[#F7F7F5]
+rounded-[20px]
+px-6
+py-5
+border
+border-[#EFEAE3]
+"
+            />
+
+        </View>
 
     );
 

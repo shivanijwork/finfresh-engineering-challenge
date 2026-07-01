@@ -167,43 +167,140 @@ bg-[#F7F8FA]
     return (
 
         <ScrollView
-            className="flex-1 bg-[#FAFAFA]"
+            className="
+flex-1
+bg-[#FCFCFA]
+"
             showsVerticalScrollIndicator={false}
         >
 
-            <View className="px-6 pt-16 pb-32">
+            <View
+                className="
+px-6
+pt-16
+pb-40
+"
+            >
 
-                {/* Header */}
+                {/* HEADER */}
 
-                <View className="mb-8">
+                <View
+                    className="
+flex-row
+justify-between
+items-center
+"
+                >
+
+                    <View>
+
+                        <Text
+                            className="
+text-[#D6A34F]
+text-3xl
+font-black
+"
+                        >
+
+                            FINFRESH
+
+                        </Text>
+
+                        <Text
+                            className="
+text-gray-400
+mt-1
+"
+                        >
+
+                            Your financial snapshot
+
+                        </Text>
+
+                    </View>
+
+                    <View
+                        className="
+w-12
+h-12
+rounded-full
+bg-[#30D5FF]
+justify-center
+items-center
+"
+                    >
+
+                        <Text
+                            className="
+text-white
+font-bold
+"
+                        >
+
+                            ₹
+
+                        </Text>
+
+                    </View>
+
+                </View>
+
+
+                {/* HERO */}
+
+                <View
+                    className="
+mt-10
+bg-[#111]
+rounded-[34px]
+p-8
+"
+                >
 
                     <Text
                         className="
-text-[36px]
-font-black
-text-black
+text-white/60
 "
                     >
-                        FinFresh
+
+                        Current Savings
+
                     </Text>
 
                     <Text
                         className="
-text-gray-400
-text-base
-mt-1
+text-white
+text-[42px]
+font-black
+mt-2
 "
                     >
-                        Your money at a glance
+
+                        ₹{summary?.savings || 0}
+
+                    </Text>
+
+                    <Text
+                        className="
+text-[#30D5FF]
+mt-3
+"
+                    >
+
+                        Savings Rate ·
+                        {" "}
+                        {summary?.savingsRate || 0}%
+
                     </Text>
 
                 </View>
 
 
-                {/* Top Stats */}
+                {/* GRID */}
 
                 <View
                     className="
+mt-8
 flex-row
 flex-wrap
 justify-between
@@ -213,57 +310,67 @@ justify-between
                     <Card
                         title="Income"
                         value={`₹${summary?.income || 0}`}
-                        color="text-green-600"
                     />
 
                     <Card
                         title="Expense"
                         value={`₹${summary?.expense || 0}`}
-                        color="text-red-500"
-                    />
-
-                    <Card
-                        title="Savings"
-                        value={`₹${summary?.savings || 0}`}
-                        subtitle={`${summary?.savingsRate || 0}% rate`}
                     />
 
                     <Card
                         title="Health"
                         value={`${financialHealth?.score || 0}`}
+
                         subtitle={
                             financialHealth?.category
                         }
-                        color="text-orange-500"
+                    />
+
+                    <Card
+                        title="Categories"
+                        value={
+                            Object.keys(
+                                summary?.categories
+                                ||
+                                {}
+                            ).length
+                        }
                     />
 
                 </View>
 
 
-                {/* Categories */}
+                {/* CATEGORY */}
 
                 <View
                     className="
 bg-white
-mt-8
 rounded-[30px]
-p-6
+p-7
+mt-8
+border
+border-[#EFEAE3]
 "
                 >
 
                     <Text
                         className="
-text-lg
-font-bold
-mb-5
+text-xl
+font-black
+mb-6
 "
                     >
-                        Categories
+
+                        Spending Breakdown
+
                     </Text>
 
                     {
+
                         Object.keys(
-                            summary?.categories || {}
+                            summary?.categories
+                            ||
+                            {}
                         ).length
 
                             ?
@@ -271,38 +378,41 @@ mb-5
                             Object.entries(
                                 summary.categories
                             ).map(
-                                ([key, value]) => (
+                                ([k, v]) => (
 
                                     <View
-                                        key={key}
+                                        key={k}
                                         className="
 flex-row
 justify-between
-py-4
-border-b
-border-gray-100
+mb-5
 "
                                     >
 
                                         <Text
                                             className="
-text-gray-700
+text-gray-500
 "
                                         >
-                                            {key}
+
+                                            {k}
+
                                         </Text>
 
                                         <Text
                                             className="
-font-semibold
+font-bold
 "
                                         >
-                                            ₹{value}
+
+                                            ₹{v}
+
                                         </Text>
 
                                     </View>
 
-                                ))
+                                )
+                            )
 
                             :
 
@@ -311,7 +421,9 @@ font-semibold
 text-gray-400
 "
                             >
-                                No transactions yet
+
+                                No transaction data
+
                             </Text>
 
                     }
@@ -319,26 +431,23 @@ text-gray-400
                 </View>
 
 
-                {/* Suggestions */}
+                {/* INSIGHTS */}
 
                 <View
                     className="
-bg-white
-rounded-[30px]
-mt-6
-p-6
+mt-8
 "
                 >
 
                     <Text
                         className="
-text-lg
-font-bold
-mb-4
+text-xl
+font-black
+mb-5
 "
                     >
 
-                        Suggestions
+                        Insights
 
                     </Text>
 
@@ -361,16 +470,18 @@ mb-4
                                         <View
                                             key={index}
                                             className="
-bg-orange-50
-rounded-2xl
-mb-3
-p-4
+bg-[#F7F7F5]
+border
+border-[#EFEAE3]
+rounded-[24px]
+p-5
+mb-4
 "
                                         >
 
                                             <Text
                                                 className="
-leading-6
+leading-7
 text-gray-700
 "
                                             >
@@ -381,19 +492,30 @@ text-gray-700
 
                                         </View>
 
-                                    ))
+                                    )
+                                )
 
                             :
 
-                            <Text
+                            <View
                                 className="
-text-gray-400
+bg-white
+rounded-[24px]
+p-6
 "
                             >
 
-                                Looking healthy ✨
+                                <Text
+                                    className="
+text-gray-500
+"
+                                >
 
-                            </Text>
+                                    Your financial health looks stable.
+
+                                </Text>
+
+                            </View>
 
                     }
 
@@ -401,8 +523,6 @@ text-gray-400
 
             </View>
 
-
-            {/* Floating Button */}
 
             <TouchableOpacity
                 onPress={() =>
@@ -412,10 +532,10 @@ text-gray-400
                 }
                 className="
 absolute
-bottom-10
+bottom-8
 left-6
 right-6
-bg-orange-500
+bg-[#30D5FF]
 rounded-full
 py-5
 "
@@ -424,13 +544,13 @@ py-5
                 <Text
                     className="
 text-white
-text-center
 font-bold
+text-center
 text-lg
 "
                 >
 
-                    ＋ Add Transaction
+                    Add Transaction
 
                 </Text>
 
@@ -439,14 +559,12 @@ text-lg
         </ScrollView>
 
     );
-
 }
 
 function Card({
     title,
     value,
-    subtitle,
-    color = "text-black",
+    subtitle
 }) {
 
     return (
@@ -456,27 +574,30 @@ function Card({
 bg-white
 w-[48%]
 rounded-[28px]
-p-5
+p-6
 mb-4
+border
+border-[#EFEAE3]
 "
         >
 
             <Text
                 className="
 text-gray-400
-text-sm
 "
             >
+
                 {title}
+
             </Text>
 
             <Text
-                className={`
+                className="
 text-[28px]
 font-black
 mt-3
-${color}
-`}
+text-[#111]
+"
             >
 
                 {value}
@@ -485,21 +606,20 @@ ${color}
 
             {
 
-                subtitle
+                subtitle && (
 
-                &&
-
-                <Text
-                    className="
-text-gray-400
+                    <Text
+                        className="
+text-[#30D5FF]
 mt-2
-text-sm
 "
-                >
+                    >
 
-                    {subtitle}
+                        {subtitle}
 
-                </Text>
+                    </Text>
+
+                )
 
             }
 

@@ -6,6 +6,7 @@ import SplashScreen from "../Screens/SplashScreen";
 import RegisterScreen from "../Screens/RegisterScreen";
 import DashboardScreen from "../Screens/DashboardScreen";
 import AddTransactionScreen from "../Screens/AddTransactionScreen";
+import BottomTabs from "./BottomTabs";
 
 const Stack = createNativeStackNavigator();
 
@@ -13,16 +14,23 @@ export default function AppNavigator() {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName={'Home'}
+        initialRouteName={'Splash'}
         screenOptions={{
           headerShown: false,
         }} >
-        <Stack.Screen name={'Splash'} component={SplashScreen} />
+        <Stack.Screen
+          name="Splash"
+          component={SplashScreen}
+        />
         <Stack.Screen name={'Home'} component={HomeScreen} />
         <Stack.Screen name={'Login'} component={LoginScreen} />
         <Stack.Screen name={'Register'} component={RegisterScreen} />
-        <Stack.Screen name={'Dashboard'} component={DashboardScreen} />
+        {/* <Stack.Screen name={'Dashboard'} component={DashboardScreen} /> */}
 
+        <Stack.Screen
+          name="Main"
+          component={BottomTabs}
+        />
         <Stack.Screen
           name="AddTransaction"
           component={AddTransactionScreen}

@@ -1,394 +1,409 @@
 import { useState } from "react";
 
 import {
-View,
-Text,
-TextInput,
-TouchableOpacity,
-Alert,
-ActivityIndicator,
-SafeAreaView,
-ScrollView,
+    View,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    Alert,
+    ActivityIndicator,
+    SafeAreaView,
+    ScrollView,
 } from "react-native";
 
 import {
-useNavigation,
+    useNavigation,
 } from "@react-navigation/native";
 
 import AsyncStorage
-from "@react-native-async-storage/async-storage";
+    from "@react-native-async-storage/async-storage";
 
 import {
-loginUser,
+    loginUser,
 } from "../services/api";
 
 export default function LoginScreen() {
 
-const navigation =
-useNavigation();
+    const navigation =
+        useNavigation();
 
-const [loading,setLoading]=
-useState(false);
+    const [loading, setLoading] =
+        useState(false);
 
-const [formData,setFormData]=
-useState({
-email:"",
-password:"",
-});
+    const [formData, setFormData] =
+        useState({
+            email: "",
+            password: "",
+        });
 
-const updateField=
-(key,value)=>{
+    const updateField =
+        (key, value) => {
 
-setFormData(
-prev=>({
-...prev,
-[key]:value,
-})
-);
+            setFormData(
+                prev => ({
+                    ...prev,
+                    [key]: value,
+                })
+            );
 
-};
+        };
 
-const handleLogin=
-async()=>{
+    const handleLogin =
+        async () => {
 
-if(
-!formData.email.trim()
-||
-!formData.password
-){
+            if (
+                !formData.email.trim()
+                ||
+                !formData.password
+            ) {
 
-Alert.alert(
-"Error",
-"Fill all fields"
-);
+                Alert.alert(
+                    "Error",
+                    "Fill all fields"
+                );
 
-return;
+                return;
 
-}
+            }
 
-try{
+            try {
 
-setLoading(true);
+                setLoading(true);
 
-const res=
-await loginUser({
-email:
-formData.email.trim(),
-password:
-formData.password,
-});
+                const res =
+                    await loginUser({
+                        email:
+                            formData.email.trim(),
+                        password:
+                            formData.password,
+                    });
 
-console.log(
-"LOGIN RESPONSE",
-JSON.stringify(
-res.data,
-null,
-2
-)
-);
+                console.log(
+                    "LOGIN RESPONSE",
+                    JSON.stringify(
+                        res.data,
+                        null,
+                        2
+                    )
+                );
 
-await AsyncStorage.setItem(
-"token",
-res.data.data.token
-);
+                await AsyncStorage.setItem(
+                    "token",
+                    res.data.data.token
+                );
 
-await AsyncStorage.setItem(
-"user",
-JSON.stringify(
-res.data.data.user
-)
-);
+                await AsyncStorage.setItem(
+                    "user",
+                    JSON.stringify(
+                        res.data.data.user
+                    )
+                );
 
-Alert.alert(
-"Success",
-"Login successful"
-);
+                Alert.alert(
+                    "Success",
+                    "Login successful"
+                );
 
-navigation.reset({
-index:0,
-routes:[
-{
-name:
-"Dashboard"
-}
-]
-});
+                // navigation.navigate(
+                // "Dashboard"
+                // );
+                navigation.replace(
+                    "Main"
+                )
 
-}
+            }
 
-catch(error){
+            catch (error) {
 
-console.log(
-"LOGIN ERROR",
-JSON.stringify(
-error?.response?.data,
-null,
-2
-)
-);
+                console.log(
+                    "LOGIN ERROR",
+                    JSON.stringify(
+                        error?.response?.data,
+                        null,
+                        2
+                    )
+                );
 
-Alert.alert(
-"Login Failed",
-error?.response?.data?.message
-||
-"Invalid credentials"
-);
+                Alert.alert(
+                    "Login Failed",
+                    error?.response?.data?.message
+                    ||
+                    "Invalid credentials"
+                );
 
-}
+            }
 
-finally{
+            finally {
 
-setLoading(false);
+                setLoading(false);
 
-}
+            }
 
-};
+        };
 
-return(
+    return (
 
-<SafeAreaView
-className="
+        <SafeAreaView
+            className="
 flex-1
-bg-[#F7F8FA]
+bg-[#FCFCFA]
 "
->
+        >
 
-<ScrollView
-contentContainerStyle={{
-flexGrow:1,
-justifyContent:
-"center",
-}}
-keyboardShouldPersistTaps=
-"handled"
->
+            <ScrollView
+                contentContainerStyle={{
+                    flexGrow: 1
+                }}
+                keyboardShouldPersistTaps="handled"
+            >
 
-<View
-className="
-px-7
+                <View
+                    className="
+flex-1
+px-6
+pt-16
+pb-10
 "
->
+                >
 
-{/* Header */}
+                    {/* HEADER */}
 
-<View
-className="
-items-center
-mb-10
-"
->
+                    <View>
 
-<View
-className="
-w-20
-h-20
-rounded-full
-bg-orange-500
-items-center
-justify-center
-mb-4
-"
->
-
-<Text
-className="
-text-white
-text-3xl
-font-bold
-"
->
-
-₹
-
-</Text>
-
-</View>
-
-<Text
-className="
+                        <Text
+                            className="
 text-4xl
-font-bold
+font-black
+text-[#D6A34F]
 "
->
+                        >
 
-FinFresh
+                            FINFRESH
 
-</Text>
+                        </Text>
 
-<Text
-className="
-text-gray-500
+                        <Text
+                            className="
+text-gray-400
 mt-2
 "
->
+                        >
 
-Track • Save • Grow
+                            Your Finance Companion
 
-</Text>
+                        </Text>
 
-</View>
+                    </View>
 
-{/* Card */}
 
-<View
-className="
+
+                    {/* LOGIN CARD */}
+
+                    <View
+                        className="
 bg-white
-rounded-[30px]
+rounded-[36px]
 p-8
-shadow
+mt-14
+border
+border-[#EFEAE3]
 "
->
+                    >
 
-<Text
-className="
+                        <Text
+                            className="
 text-3xl
-font-bold
-mb-2
+font-black
+text-[#111]
 "
->
+                        >
 
-Welcome Back
+                            Welcome Back
 
-</Text>
+                        </Text>
 
-<Text
-className="
+
+                        <Text
+                            className="
 text-gray-500
-mb-7
+mt-3
+mb-8
+leading-7
 "
->
+                        >
 
-Login to continue
+                            Sign in to continue
+                            tracking your finances.
 
-</Text>
+                        </Text>
 
-<TextInput
-placeholder="Email"
-autoCapitalize="none"
-keyboardType="email-address"
-value={
-formData.email
-}
-onChangeText={
-(v)=>
-updateField(
-"email",
-v
-)
-}
-className="
-bg-gray-100
+
+
+                        <TextInput
+                            placeholder="Email"
+                            placeholderTextColor="#999"
+                            autoCapitalize="none"
+                            keyboardType="email-address"
+                            value={
+                                formData.email
+                            }
+                            onChangeText={(v) =>
+
+                                updateField(
+                                    "email",
+                                    v
+                                )
+
+                            }
+                            className="
+bg-[#FAFAFA]
 rounded-2xl
 p-5
 mb-4
+text-[#111]
 "
-/>
+                        />
 
-<TextInput
-placeholder="Password"
-secureTextEntry
-value={
-formData.password
-}
-onChangeText={
-(v)=>
-updateField(
-"password",
-v
-)
-}
-className="
-bg-gray-100
+
+
+                        <TextInput
+                            placeholder="Password"
+                            placeholderTextColor="#999"
+                            secureTextEntry
+                            value={
+                                formData.password
+                            }
+                            onChangeText={(v) =>
+
+                                updateField(
+                                    "password",
+                                    v
+                                )
+
+                            }
+                            className="
+bg-[#FAFAFA]
 rounded-2xl
 p-5
 mb-6
+text-[#111]
 "
-/>
+                        />
 
-<TouchableOpacity
-onPress={
-handleLogin
-}
-disabled={
-loading
-}
-className="
-bg-orange-500
-rounded-2xl
+
+
+                        <TouchableOpacity
+
+                            onPress={
+                                handleLogin
+                            }
+
+                            disabled={
+                                loading
+                            }
+
+                            className="
+bg-[#30D5FF]
+rounded-full
 py-5
 "
->
 
-{
-loading
+                        >
 
-?
+                            {
 
-<ActivityIndicator
-color=
-"white"
-/>
+                                loading
 
-:
+                                    ?
 
-<Text
-className="
-text-white
+                                    <ActivityIndicator
+                                        color="white"
+                                    />
+
+                                    :
+
+                                    <Text
+                                        className="
 text-center
+text-white
 font-bold
 text-lg
 "
->
+                                    >
 
-Login
+                                        Login
 
-</Text>
+                                    </Text>
 
-}
+                            }
 
-</TouchableOpacity>
+                        </TouchableOpacity>
 
-<TouchableOpacity
-onPress={()=>
-navigation.navigate(
-"Register"
-)
-}
->
 
-<Text
-className="
-text-center
-mt-6
-text-gray-500
+
+                        <TouchableOpacity
+
+                            className="
+mt-8
 "
->
 
-Don't have an account?
+                            onPress={() =>
 
-<Text
-className="
-text-orange-500
+                                navigation.navigate(
+                                    "Register"
+                                )
+
+                            }
+
+                        >
+
+                            <Text
+                                className="
+text-center
+text-[#111]
 font-semibold
 "
->
+                            >
 
- Register
+                                Don't have an account?
+                                {" "}
+                                Create one
 
-</Text>
+                            </Text>
 
-</Text>
+                        </TouchableOpacity>
 
-</TouchableOpacity>
+                    </View>
 
-</View>
 
-</View>
 
-</ScrollView>
+                    {/* FOOTER */}
 
-</SafeAreaView>
+                    <View
+                        className="
+items-center
+mt-10
+"
+                    >
 
-);
+                        <Text
+                            className="
+text-gray-400
+"
+                        >
+
+                            Secure • Private • Simple
+
+                        </Text>
+
+                    </View>
+
+                </View>
+
+            </ScrollView>
+
+        </SafeAreaView>
+
+    );
 
 }
