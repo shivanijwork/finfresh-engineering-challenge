@@ -11,13 +11,12 @@ export default function KeyboardWrapper({
     return (
         <KeyboardAvoidingView
             className={className}
-            behavior={Platform.OS === "ios" ? "padding" : undefined}
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
         >
             <ScrollView
                 contentContainerStyle={{ flexGrow: 1, paddingBottom: 24 }}
                 keyboardShouldPersistTaps="handled"
-                keyboardDismissMode="none"
-                automaticallyAdjustKeyboardInsets={true}
+                keyboardDismissMode="interactive"
                 showsVerticalScrollIndicator={false}
             >
                 {children}

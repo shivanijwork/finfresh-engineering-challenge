@@ -17,6 +17,19 @@ export default function FormField({
     const [focused, setFocused] = useState(false);
     const [hide, setHide] = useState(!!secureTextEntry);
 
+    // Focus visuals driven via `style` only — never change className,
+    // so the input is not remounted (that caused keyboard blink / no typing).
+    const containerStyle = {
+        borderWidth: 1,
+        borderColor: focused ? "#30D5FF" : "#EAE7E0",
+        backgroundColor: focused ? "#FFFFFF" : "#F6F5F1",
+        shadowColor: "#30D5FF",
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: focused ? 0.18 : 0,
+        shadowRadius: 10,
+        elevation: focused ? 2 : 0,
+    };
+
     return (
         <View className="mb-5">
             <Text className="text-[13px] font-semibold text-[#6B7280] mb-2 ml-1 tracking-wide">
@@ -24,22 +37,8 @@ export default function FormField({
             </Text>
 
             <View
-                className={`flex-row items-center rounded-2xl px-5 border ${
-                    focused
-                        ? "border-[#30D5FF] bg-white"
-                        : "border-[#EAE7E0] bg-[#F6F5F1]"
-                }`}
-                style={
-                    focused
-                        ? {
-                              shadowColor: "#30D5FF",
-                              shadowOffset: { width: 0, height: 4 },
-                              shadowOpacity: 0.18,
-                              shadowRadius: 10,
-                              elevation: 2,
-                          }
-                        : undefined
-                }
+                className="flex-row items-center rounded-2xl px-5"
+                style={containerStyle}
             >
                 <TextInput
                     value={value}
