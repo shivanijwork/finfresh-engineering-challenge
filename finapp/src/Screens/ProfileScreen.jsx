@@ -1,35 +1,76 @@
+import { useEffect, useState } from "react";
+
 import {
-View,
-Text,
-TouchableOpacity,
+    View,
+    Text,
+    TouchableOpacity,
 } from "react-native";
 
 import AsyncStorage
-from "@react-native-async-storage/async-storage";
+    from "@react-native-async-storage/async-storage";
+
+import {
+    useNavigation,
+} from "@react-navigation/native";
+
+import {
+    cardShadow,
+    darkButtonShadow,
+} from "../theme/theme";
 
 export default function ProfileScreen() {
 
-const logout =
-async()=>{
+    const navigation = useNavigation();
 
-await AsyncStorage.clear();
+    const [user, setUser] = useState(null);
 
-};
+    useEffect(() => {
+        (async () => {
+            const stored =
+                await AsyncStorage.getItem("user");
+            if (stored) setUser(JSON.parse(stored));
+        })();
+    }, []);
 
-return(
+    const logout = async () => {
+        await AsyncStorage.clear();
+        navigation.reset({
+            index: 0,
+            routes: [{ name: "Login" }],
+        });
+    };
 
-<View
-className="
+    const name = user?.name || "FinFresh User";
+    const email = user?.email || "FinFresh Member";
+    const initial = name?.[0]?.toUpperCase() || "U";
+
+    return (
+
+        <View
+            className="
 flex-1
 bg-[#FCFCFA]
 justify-center
-items-center
 px-6
 "
->
+        >
 
-<View
-className="
+            {/* PROFILE CARD */}
+
+            <View
+                style={cardShadow}
+                className="
+bg-white
+rounded-[36px]
+p-8
+items-center
+border
+border-[#EFEAE3]
+"
+            >
+
+                <View
+                    className="
 w-24
 h-24
 rounded-full
@@ -37,69 +78,69 @@ bg-[#30D5FF]
 justify-center
 items-center
 "
->
+                >
 
-<Text
-className="
+                    <Text
+                        className="
 text-white
 text-4xl
-font-bold
+font-black
 "
->
-S
-</Text>
+                    >
+                        {initial}
+                    </Text>
 
-</View>
+                </View>
 
-<Text
-className="
-text-3xl
+                <Text
+                    className="
+text-2xl
 font-black
 mt-6
+text-[#111]
 "
->
+                >
+                    {name}
+                </Text>
 
-Your Profile
-
-</Text>
-
-<Text
-className="
+                <Text
+                    className="
 text-gray-500
 mt-2
 "
->
+                >
+                    {email}
+                </Text>
 
-FinFresh Member
-
-</Text>
-
-<TouchableOpacity
-className="
-bg-black
-px-8
-py-4
+                <TouchableOpacity
+                    style={darkButtonShadow}
+                    className="
+bg-[#111]
+w-full
+py-5
 rounded-full
 mt-10
 "
-onPress={logout}
->
+                    onPress={logout}
+                >
 
-<Text
-className="
+                    <Text
+                        className="
 text-white
 font-bold
+text-center
+text-lg
 "
->
+                    >
+                        Logout
+                    </Text>
 
-Logout
+                </TouchableOpacity>
 
-</Text>
+            </View>
 
-</TouchableOpacity>
+        </View>
 
-</View>
-
-);
+    );
 
 }

@@ -17,6 +17,11 @@ import {
 import AsyncStorage
     from "@react-native-async-storage/async-storage";
 
+import {
+    cardShadow,
+    buttonShadow,
+} from "../theme/theme";
+
 export default function HomeScreen() {
 
     const navigation = useNavigation();
@@ -258,6 +263,7 @@ mt-6
 
 
                 <TouchableOpacity
+                    style={buttonShadow}
                     className="
 bg-[#30D5FF]
 rounded-full
@@ -341,6 +347,7 @@ text-[#111]
 
                         <View
                             key={index}
+                            style={cardShadow}
                             className="
 bg-white
 rounded-[32px]
