@@ -6,6 +6,7 @@ import SplashScreen from "../Screens/SplashScreen";
 import RegisterScreen from "../Screens/RegisterScreen";
 import DashboardScreen from "../Screens/DashboardScreen";
 import AddTransactionScreen from "../Screens/AddTransactionScreen";
+import TransactionsScreen from "../Screens/TransactionsScreen";
 import BottomTabs from "./BottomTabs";
 
 const Stack = createNativeStackNavigator();
@@ -34,6 +35,10 @@ export default function AppNavigator() {
         <Stack.Screen
           name="AddTransaction"
           component={AddTransactionScreen}
+        />
+        <Stack.Screen
+          name="Transactions"
+          component={TransactionsScreen}
         />
 
       </Stack.Navigator>

@@ -433,6 +433,32 @@ text-gray-400
 
                 {/* INSIGHTS */}
 
+                <TouchableOpacity
+                    onPress={() => navigation.navigate("Transactions")}
+                    className="
+mt-8
+bg-[#30D5FF]
+rounded-[30px]
+p-5
+mb-6
+"
+                >
+
+                    <Text
+                        className="
+text-white
+text-lg
+font-bold
+text-center
+"
+                    >
+
+                        View Transaction History
+
+                    </Text>
+
+                </TouchableOpacity>
+
                 <View
                     className="
 mt-8
