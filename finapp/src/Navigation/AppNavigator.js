@@ -54,6 +54,10 @@ export default function AppNavigator() {
           name="BudgetGoals"
           component={BudgetGoalsScreen}
         />
+        <Stack.Screen
+          name="Profile"
+          component={ProfileScreen}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );

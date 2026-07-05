@@ -153,7 +153,7 @@ export default function ProfileScreen() {
                     style={cardShadow}
                 >
                     <View className="flex-row justify-between items-start mb-4">
-                        <View>
+                        <View className="flex-1 pr-3">
                             <Text className="text-xl font-black text-[#111]">Budget summary</Text>
                             <Text className="text-gray-400 text-sm mt-1">Quick look at your active spending goals.</Text>
                         </View>

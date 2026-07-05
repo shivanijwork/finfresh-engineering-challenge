@@ -37,26 +37,19 @@ export default function HomeScreen() {
         }
     }, [isFocused]);
 
-    const loadUser =
-        async () => {
-
-            const storedUser =
-                await AsyncStorage.getItem(
-                    "user"
-                );
+    const loadUser = async () => {
+        try {
+            const storedUser = await AsyncStorage.getItem("user");
 
             if (storedUser) {
-
-                setUser(
-                    JSON.parse(
-                        storedUser
-                    )
-                );
-
+                setUser(JSON.parse(storedUser));
+            } else {
+                setUser(null);
             }
-
-        };
-
+        } catch (err) {
+            setUser(null);
+        }
+    };
     return (
 
         <ScrollView
@@ -264,33 +257,31 @@ mt-6
                 </Text>
 
 
-                <TouchableOpacity
-                    style={buttonShadow}
-                    className="
+                {
+                    !user && (
+                        <TouchableOpacity
+                            style={buttonShadow}
+                            className="
 bg-[#30D5FF]
 rounded-full
 mt-10
 py-5
 "
-                    onPress={() =>
-                        navigation.navigate(
-                            "Register"
-                        )
-                    }
-                >
-
-                    <Text
-                        className="
+                            onPress={() => navigation.navigate("Register")}
+                        >
+                            <Text
+                                className="
 text-center
 text-white
 font-bold
 text-lg
 "
-                    >
-                        Get Started
-                    </Text>
-
-                </TouchableOpacity>
+                            >
+                                Get Started
+                            </Text>
+                        </TouchableOpacity>
+                    )
+                }
 
             </View>
 
