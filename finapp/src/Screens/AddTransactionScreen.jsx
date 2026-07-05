@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import {
     View,
@@ -23,6 +23,8 @@ import {
 import {
     createTransaction,
     updateTransaction,
+    getProfile,
+    getSummary,
 } from "../services/api";
 
 import KeyboardWrapper
@@ -48,6 +50,9 @@ export default function AddTransactionScreen() {
     const [loading, setLoading] =
         useState(false);
 
+    const [summary, setSummary] = useState(null);
+    const [budgetGoals, setBudgetGoals] = useState({});
+
     const [formData, setFormData] =
         useState({
             type: transaction?.type || "expense",
@@ -70,6 +75,62 @@ export default function AddTransactionScreen() {
         });
 
     };
+
+    const loadBudgetData = async () => {
+        try {
+            const token = await AsyncStorage.getItem("token");
+            if (!token) return;
+
+            const [profileRes, summaryRes] = await Promise.all([
+                getProfile(token),
+                getSummary(token),
+            ]);
+
+            setBudgetGoals(profileRes?.data?.data?.user?.budgetGoals || {});
+            setSummary(summaryRes?.data?.data || {});
+        } catch (error) {
+            console.log("BUDGET DATA LOAD ERROR", error?.response?.data || error);
+        }
+    };
+
+    useEffect(() => {
+        loadBudgetData();
+    }, []);
+
+    const monthlyLimit = Number(budgetGoals?.monthlyLimit || 0);
+    const categoryBudgets = budgetGoals?.categoryBudgets || {};
+    const currentCategory = formData.category.trim();
+    const currentAmount = Number(formData.amount) || 0;
+    const spentThisMonth = Number(summary?.expense || 0);
+    const categorySpent = currentCategory ? Number(summary?.categories?.[currentCategory] || 0) : 0;
+    const categoryLimit = currentCategory ? Number(categoryBudgets[currentCategory] || 0) : 0;
+    const remainingMonthly = monthlyLimit - spentThisMonth;
+    const remainingCategory = categoryLimit - categorySpent;
+    const isExpenseType = ["expense", "debt"].includes(formData.type);
+    const willExceedMonthly = isExpenseType && monthlyLimit > 0 && currentAmount > remainingMonthly;
+    const willExceedCategory = isExpenseType && categoryLimit > 0 && currentAmount > remainingCategory;
+    const showCategoryBudget = isExpenseType && currentCategory && categoryLimit > 0;
+    const warningMessages = [];
+    if (monthlyLimit > 0) {
+        if (remainingMonthly <= 0) {
+            warningMessages.push("You have already reached your monthly spending limit.");
+        } else if (remainingMonthly <= 0.2 * monthlyLimit) {
+            warningMessages.push("Monthly budget is running low.");
+        }
+    }
+    if (showCategoryBudget) {
+        if (remainingCategory <= 0) {
+            warningMessages.push(`Category budget for ${currentCategory} is exceeded.`);
+        } else if (remainingCategory <= 0.2 * categoryLimit) {
+            warningMessages.push(`Category budget for ${currentCategory} is almost full.`);
+        }
+    }
+    if (willExceedMonthly) {
+        warningMessages.push("This transaction will exceed your monthly budget.");
+    }
+    if (willExceedCategory) {
+        warningMessages.push("This transaction will exceed the selected category budget.");
+    }
 
     const validate = () => {
 
@@ -120,102 +181,71 @@ export default function AddTransactionScreen() {
 
     };
 
-    const handleSubmit =
-        async () => {
+    const submitTransaction = async () => {
+        try {
+            setLoading(true);
 
-            if (
-                !validate()
-            ) {
+            const token = await AsyncStorage.getItem("token");
 
-                return;
+            const payload = {
+                type: formData.type,
+                category: formData.category,
+                amount: Number(formData.amount),
+                description: formData.description,
+                date: formData.date,
+            };
 
-            }
+            const res = isEditMode
+                ? await updateTransaction(transaction._id, payload, token)
+                : await createTransaction(payload, token);
 
-            try {
+            console.log("TRANSACTION", res.data);
 
-                setLoading(true);
+            Alert.alert(
+                "Success",
+                isEditMode ? "Transaction Updated" : "Transaction Added",
+                [
+                    {
+                        text: "OK",
+                        onPress: () =>
+                            navigation.navigate(
+                                isEditMode ? "Transactions" : "Dashboard"
+                            ),
+                    },
+                ]
+            );
+        } catch (error) {
+            console.log(error?.response?.data);
+            Alert.alert(
+                "Error",
+                error?.response?.data?.message || "Something went wrong"
+            );
+        } finally {
+            setLoading(false);
+        }
+    };
 
-                const token =
-                    await AsyncStorage.getItem(
-                        "token"
-                    );
+    const handleSubmit = async () => {
+        if (!validate()) {
+            return;
+        }
 
-                const payload = {
+        const hasBudgetExceedWarning = willExceedMonthly || willExceedCategory;
 
-                    type:
-                        formData.type,
+        if (hasBudgetExceedWarning) {
+            Alert.alert(
+                "Budget limit exceeded",
+                "This transaction may exceed your budget. Do you want to proceed anyway?",
+                [
+                    { text: "Cancel", style: "cancel" },
+                    { text: "Proceed", onPress: submitTransaction },
+                ]
+            );
+            return;
+        }
 
-                    category:
-                        formData.category,
-
-                    amount:
-                        Number(
-                            formData.amount
-                        ),
-
-                    description:
-                        formData.description,
-
-                    date:
-                        formData.date,
-
-                };
-
-                const res =
-                    isEditMode
-                        ? await updateTransaction(
-                            transaction._id,
-                            payload,
-                            token
-                        )
-                        : await createTransaction(
-                            payload,
-                            token
-                        );
-
-                console.log(
-                    "TRANSACTION",
-                    res.data
-                );
-
-                Alert.alert(
-                    "Success",
-                    isEditMode ? "Transaction Updated" : "Transaction Added",
-                    [
-                        {
-                            text: "OK",
-                            onPress: () =>
-                                navigation.navigate(
-                                    isEditMode
-                                        ? "Transactions"
-                                        : "Dashboard"
-                                ),
-                        },
-                    ]
-                );
-
-            }
-            catch (error) {
-
-                console.log(
-                    error?.response?.data
-                );
-
-                Alert.alert(
-                    "Error",
-                    error?.response?.data?.message
-                    ||
-                    "Something went wrong"
-                );
-
-            }
-            finally {
-
-                setLoading(false);
-
-            }
-
-        };
+        await submitTransaction();
+    };
 
     return (
 
@@ -383,6 +413,28 @@ ${formData.type === item
 
                         </View>
 
+                        {isExpenseType && monthlyLimit > 0 && (
+                            <View className="mb-5 bg-[#FEF3C7] rounded-[24px] p-4 border border-[#FCD34D]">
+                                <Text className="text-sm text-[#92400E] font-semibold mb-1">Budget warning</Text>
+                                <Text className="text-sm text-[#92400E]">
+                                    {remainingMonthly > 0
+                                        ? `₹${remainingMonthly} left of ₹${monthlyLimit} monthly limit.`
+                                        : `Monthly limit reached.`}
+                                </Text>
+                                {showCategoryBudget && (
+                                    <Text className="text-sm text-[#92400E] mt-1">
+                                        {remainingCategory > 0
+                                            ? `₹${remainingCategory} left for ${currentCategory}.`
+                                            : `Category budget for ${currentCategory} is exceeded.`}
+                                    </Text>
+                                )}
+                                {warningMessages.map((message, index) => (
+                                    <Text key={index} className="text-xs text-[#92400E] mt-1">
+                                        • {message}
+                                    </Text>
+                                ))}
+                            </View>
+                        )}
 
                         {/* INPUTS */}
 

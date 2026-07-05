@@ -93,42 +93,7 @@ export default function ProfileScreen() {
                     </View>
                 </View>
 
-                <View
-                    className="mt-6 bg-white rounded-[34px] p-5 border border-[#EFEAE3]"
-                    style={cardShadow}
-                >
-                    <View className="flex-row items-center justify-between mb-4">
-                        <View>
-                            <Text className="text-lg font-black text-[#111]">Quick actions</Text>
-                            <Text className="text-gray-400 text-sm">Swipe through core profile tools</Text>
-                        </View>
-                        {/* <Text className="text-[#30D5FF] font-semibold">Compact</Text> */}
-                    </View>
 
-                    <View className="flex-row justify-between space-x-3">
-                        <TouchableOpacity
-                            className="flex-1 bg-[#F8FAFC] rounded-[24px] p-4 border border-[#E5E7EB]"
-                            onPress={() => navigation.navigate("EditProfile")}
-                        >
-                            <Text className="text-gray-500 text-xs uppercase tracking-[0.2em]">Profile</Text>
-                            <Text className="text-[#111] font-bold text-base mt-3">Edit</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            className="flex-1 bg-[#F8FAFC] rounded-[24px] p-4 border border-[#E5E7EB]"
-                            onPress={() => navigation.navigate("Security")}
-                        >
-                            <Text className="text-gray-500 text-xs uppercase tracking-[0.2em]">Security</Text>
-                            <Text className="text-[#111] font-bold text-base mt-3">Lock</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            className="flex-1 bg-[#F8FAFC] rounded-[24px] p-4 border border-[#E5E7EB]"
-                            onPress={() => navigation.navigate("BudgetGoals")}
-                        >
-                            <Text className="text-gray-500 text-xs uppercase tracking-[0.2em]">Budget</Text>
-                            <Text className="text-[#111] font-bold text-base mt-3">Goals</Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
 
                 <View
                     className="mt-6 bg-white rounded-[34px] p-6 border border-[#EFEAE3]"
@@ -164,6 +129,129 @@ export default function ProfileScreen() {
                             </View>
                         </View>
                     )}
+                </View>
+
+                <View
+                    className="mt-6 bg-white rounded-[34px] p-5 border border-[#EFEAE3]"
+                    style={cardShadow}
+                >
+
+                    {/* Header */}
+
+                    <View className="mb-5">
+                        <Text className="text-lg font-black text-[#111]">
+                            Quick Actions
+                        </Text>
+
+                        <Text className="text-gray-400 text-sm mt-1">
+                            Manage your account faster
+                        </Text>
+                    </View>
+
+
+                    {/* Actions */}
+
+                    <TouchableOpacity
+                        onPress={() => navigation.navigate("EditProfile")}
+                        className="
+        flex-row
+        items-center
+        justify-between
+        bg-[#F8FAFC]
+        rounded-[22px]
+        px-5
+        py-4
+        border
+        border-[#E5E7EB]
+        mb-3
+        "
+                    >
+
+                        <View>
+                            <Text className="text-[#111] font-bold">
+                                Edit Profile
+                            </Text>
+
+                            <Text className="text-gray-400 text-xs mt-1">
+                                Update your personal information
+                            </Text>
+                        </View>
+
+                        <Text className="text-[#30D5FF] text-xl">
+                            →
+                        </Text>
+
+                    </TouchableOpacity>
+
+
+                    <TouchableOpacity
+                        onPress={() => navigation.navigate("Security")}
+                        className="
+        flex-row
+        items-center
+        justify-between
+        bg-[#F8FAFC]
+        rounded-[22px]
+        px-5
+        py-4
+        border
+        border-[#E5E7EB]
+        mb-3
+        "
+                    >
+
+                        <View>
+
+                            <Text className="text-[#111] font-bold">
+                                Security
+                            </Text>
+
+                            <Text className="text-gray-400 text-xs mt-1">
+                                Password & account protection
+                            </Text>
+
+                        </View>
+
+                        <Text className="text-[#30D5FF] text-xl">
+                            →
+                        </Text>
+
+                    </TouchableOpacity>
+
+
+                    <TouchableOpacity
+                        onPress={() => navigation.navigate("BudgetGoals")}
+                        className="
+        flex-row
+        items-center
+        justify-between
+        bg-[#F8FAFC]
+        rounded-[22px]
+        px-5
+        py-4
+        border
+        border-[#E5E7EB]
+        "
+                    >
+
+                        <View>
+
+                            <Text className="text-[#111] font-bold">
+                                Budget Goals
+                            </Text>
+
+                            <Text className="text-gray-400 text-xs mt-1">
+                                Review and update your targets
+                            </Text>
+
+                        </View>
+
+                        <Text className="text-[#30D5FF] text-xl">
+                            →
+                        </Text>
+
+                    </TouchableOpacity>
+
                 </View>
 
                 <TouchableOpacity
