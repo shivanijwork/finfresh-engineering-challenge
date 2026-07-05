@@ -9,6 +9,7 @@ import {
     ActivityIndicator,
     ScrollView,
     SafeAreaView,
+    Platform,
 } from "react-native";
 
 import AsyncStorage
@@ -29,6 +30,7 @@ import {
 
 import KeyboardWrapper
     from "../../Components/KeyboardWrapper";
+import DateTimePicker from "@react-native-community/datetimepicker";
 
 import {
     cardShadow,
@@ -52,6 +54,7 @@ export default function AddTransactionScreen() {
 
     const [summary, setSummary] = useState(null);
     const [budgetGoals, setBudgetGoals] = useState({});
+    const [showDatePicker, setShowDatePicker] = useState(false);
 
     const [formData, setFormData] =
         useState({
@@ -61,7 +64,7 @@ export default function AddTransactionScreen() {
             description: transaction?.description || "",
             date: transaction?.date
                 ? new Date(transaction.date).toISOString().slice(0, 10)
-                : "",
+                : new Date().toISOString().slice(0, 10),
         });
 
     const update = (
@@ -74,6 +77,20 @@ export default function AddTransactionScreen() {
             [key]: value,
         });
 
+    };
+
+    const handleDateChange = (event, selectedDate) => {
+        if (Platform.OS === "android") {
+            setShowDatePicker(false);
+        }
+        if (event.type === "dismissed") {
+            return;
+        }
+        const currentDate = selectedDate || new Date(formData.date);
+        setFormData({
+            ...formData,
+            date: currentDate.toISOString().slice(0, 10),
+        });
     };
 
     const loadBudgetData = async () => {
@@ -461,16 +478,24 @@ ${formData.type === item
                                 )}
                         />
 
-                        <Input
-                            label="Date"
-                            placeholder="YYYY-MM-DD"
-                            value={formData.date}
-                            onChange={(v) =>
-                                update(
-                                    "date",
-                                    v
-                                )}
-                        />
+                        <View className="mb-5">
+                            <Text className="text-gray-500 mb-3 font-semibold">Date</Text>
+                            <TouchableOpacity
+                                onPress={() => setShowDatePicker(true)}
+                                className="bg-[#F7F7F5] rounded-[20px] px-6 py-5 border border-[#EFEAE3]"
+                            >
+                                <Text className="text-[#111]">{formData.date || "Select date"}</Text>
+                            </TouchableOpacity>
+                            {showDatePicker && (
+                                <DateTimePicker
+                                    value={new Date(formData.date)}
+                                    mode="date"
+                                    display={Platform.OS === "ios" ? "inline" : "default"}
+                                    onChange={handleDateChange}
+                                    maximumDate={new Date()}
+                                />
+                            )}
+                        </View>
 
                         <Input
                             label="Description"

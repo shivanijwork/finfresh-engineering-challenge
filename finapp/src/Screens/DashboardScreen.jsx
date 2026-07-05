@@ -60,6 +60,8 @@ export default function DashboardScreen() {
 
     const [showBudgetDetails, setShowBudgetDetails] = useState(false);
     const [showBreakdown, setShowBreakdown] = useState(false);
+    const [activeTab, setActiveTab] = useState("Overview");
+    const dashboardTabs = ["Overview", "Budget", "Analytics"];
 
     const [history, setHistory] = useState([]);
     const [compareTotals, setCompareTotals] =
@@ -528,17 +530,7 @@ mt-3
 
                 </View>
 
-                <View
-                    style={cardShadow}
-                    className="
-bg-white
-rounded-[30px]
-p-6
-mt-6
-border
-border-[#EFEAE3]
-"
-                >
+                <View style={cardShadow} className="bg-white rounded-[30px] p-6 mt-6 border border-[#EFEAE3]">
                     <Text className="text-xl font-black mb-4">Monthly snapshot</Text>
                     <View className="flex-row flex-wrap justify-between">
                         <View className="w-[48%] mb-4">
@@ -564,420 +556,241 @@ border-[#EFEAE3]
                     </View>
                 </View>
 
-                <View
-                    style={cardShadow}
-                    className="
-bg-white
-rounded-[30px]
-p-5
-mt-6
-border
-border-[#EFEAE3]
-"
-                >
-                    <View className="flex-row items-center justify-between mb-4">
-                        <View>
-                            <Text className="text-xl font-black">Budget overview</Text>
-                            <Text className="text-gray-500 text-sm mt-1">Track spending, savings, and debt in one view.</Text>
-                        </View>
-                        <TouchableOpacity onPress={() => setShowBudgetDetails((prev) => !prev)} className="bg-[#F3F4F6] rounded-full px-3 py-1 max-w-[35%]">
-                            <Text className="text-black text-[11px] flex-shrink font-semibold" numberOfLines={1}>
-                                 {showBudgetDetails ? "▲" : "▼"}
-                                 
+                <View className="mt-6 flex-row rounded-[30px] overflow-hidden border border-[#E5E7EB]" style={cardShadow}>
+                    {dashboardTabs.map((tab) => (
+                        <TouchableOpacity
+                            key={tab}
+                            onPress={() => setActiveTab(tab)}
+                            className={`flex-1 py-3 items-center ${activeTab === tab ? "bg-[#EFF6FF]" : "bg-white"}`}
+                        >
+                            <Text className={`font-semibold ${activeTab === tab ? "text-[#111]" : "text-[#6B7280]"}`}>
+                                {tab}
                             </Text>
                         </TouchableOpacity>
-                    </View>
+                    ))}
+                </View>
 
-                    <View className="space-y-4">
-                        <View className="rounded-[26px] bg-[#F8FAFC] p-4 border border-[#DBEAFE]">
-                            <View className="flex-row justify-between items-center mb-3">
-                                <Text className="text-gray-500">Monthly status</Text>
+                {activeTab === "Overview" && (
+                    <View className="space-y-6 mt-6">
+                        <View style={cardShadow} className="bg-white rounded-[30px] p-5 border border-[#EFEAE3]">
+                            <View className="flex-row justify-between items-center mb-4">
+                                <View>
+                                    <Text className="text-xl font-black">Budget pulse</Text>
+                                    <Text className="text-gray-500 text-sm mt-1">Your current spending status.</Text>
+                                </View>
                                 <View className={`rounded-full px-3 py-1`} style={{ backgroundColor: `${budgetStatusColor}20` }}>
                                     <Text style={{ color: budgetStatusColor }} className="font-semibold text-xs">
                                         {budgetStatus}
                                     </Text>
                                 </View>
                             </View>
-                            <Text className="text-sm text-gray-500 mb-2">{budgetAlerts.length ? budgetAlerts[0] : "Budget status looks healthy this month."}</Text>
+                            <Text className="text-sm text-gray-500 mb-3">{budgetAlerts.length ? budgetAlerts[0] : "Budget status looks healthy this month."}</Text>
+                            <View className="bg-[#F3F4F6] h-3 rounded-full overflow-hidden">
+                                <View className="h-3 rounded-full bg-[#30D5FF]" style={{ width: `${monthlyUsageRatio}%` }} />
+                            </View>
                         </View>
 
-                        <View className="space-y-4">
-                            <View>
-                                <View className="flex-row justify-between items-center mb-2">
+                        <View className="flex-row justify-between gap-3 mt-4 mb-4">
+                            <TouchableOpacity onPress={() => navigation.navigate("BudgetGoals")} className="flex-1 bg-[#10B981] rounded-[28px] p-4">
+                                <Text className="text-white text-center font-bold">Budget Goals</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={() => navigation.navigate("Transactions")} className="flex-1 bg-[#30D5FF] rounded-[28px] p-4">
+                                <Text className="text-white text-center font-bold">Transactions</Text>
+                            </TouchableOpacity>
+                        </View>
+
+                        <View className="flex-row flex-wrap justify-between">
+                            <Card title="Income" value={`₹${incomeValue}`} />
+                            <Card title="Expense" value={`₹${expenseValue}`} />
+                            <Card title="Savings" value={`₹${summary?.savings || 0}`} />
+                            <Card title="Debt" value={`₹${summary?.debt || 0}`} />
+                        </View>
+                    </View>
+                )}
+
+                {activeTab === "Budget" && (
+                    <View className="space-y-6 mt-6">
+                        <View style={cardShadow} className="bg-white rounded-[30px] p-5 border border-[#EFEAE3]">
+                            <View className="flex-row justify-between items-center mb-4">
+                                <View>
+                                    <Text className="text-xl font-black">Budget overview</Text>
+                                    <Text className="text-gray-500 text-sm mt-1">A focused view of your budget goals.</Text>
+                                </View>
+                                <TouchableOpacity onPress={() => setShowBudgetDetails((prev) => !prev)} className="bg-[#F3F4F6] rounded-full px-4 py-2">
+                                    <Text className="text-xs font-semibold text-[#111]">{showBudgetDetails ? "Hide details" : "Show details"}</Text>
+                                </TouchableOpacity>
+                            </View>
+                            <View className="space-y-4">
+                                <View>
                                     <Text className="text-gray-500">Monthly limit</Text>
-                                    <Text className="font-semibold">₹{monthlyLimit}</Text>
+                                    <Text className="text-[#111] font-bold text-xl mt-1">₹{monthlyLimit}</Text>
                                 </View>
-                                <View className="bg-[#F3F4F6] h-3 rounded-full overflow-hidden">
-                                    <View className="h-3 rounded-full bg-[#30D5FF]" style={{ width: `${monthlyUsageRatio}%` }} />
-                                </View>
-                                <Text className="text-xs text-gray-400 mt-2">₹{expenseValue} of ₹{monthlyLimit || 0}</Text>
-                            </View>
-
-                            <View>
-                                <View className="flex-row justify-between items-center mb-2">
+                                <View>
                                     <Text className="text-gray-500">Savings goal</Text>
-                                    <Text className="font-semibold">₹{savingsGoal}</Text>
+                                    <Text className="text-[#111] font-bold text-xl mt-1">₹{savingsGoal}</Text>
                                 </View>
-                                <View className="bg-[#F3F4F6] h-3 rounded-full overflow-hidden">
-                                    <View className="h-3 rounded-full bg-[#10B981]" style={{ width: `${savingsProgressRatio}%` }} />
-                                </View>
-                                <Text className="text-xs text-gray-400 mt-2">₹{summary?.savings || 0} of ₹{savingsGoal || 0}</Text>
-                            </View>
-
-                            <View>
-                                <View className="flex-row justify-between items-center mb-2">
+                                <View>
                                     <Text className="text-gray-500">Debt goal</Text>
-                                    <Text className="font-semibold">₹{debtGoal}</Text>
+                                    <Text className="text-[#111] font-bold text-xl mt-1">₹{debtGoal}</Text>
                                 </View>
-                                <View className="bg-[#F3F4F6] h-3 rounded-full overflow-hidden">
-                                    <View className="h-3 rounded-full bg-[#EF4444]" style={{ width: `${debtProgressRatio}%` }} />
-                                </View>
-                                <Text className="text-xs text-gray-400 mt-2">₹{summary?.debt || 0} of ₹{debtGoal || 0}</Text>
                             </View>
+                            {showBudgetDetails && (
+                                <View className="mt-5 pt-4 border-t border-[#E5E7EB] space-y-4">
+                                    {categoryBudgetList.length > 0 ? (
+                                        categoryBudgetList.map((item) => (
+                                            <View key={item.category} className="space-y-2">
+                                                <View className="flex-row justify-between items-center">
+                                                    <Text className="text-gray-500">{item.category}</Text>
+                                                    <Text className="font-semibold">₹{item.limit}</Text>
+                                                </View>
+                                                <View className="bg-[#F3F4F6] h-2 rounded-full overflow-hidden">
+                                                    <View
+                                                        className={`h-2 rounded-full ${item.ratio >= 80 ? "bg-[#F97316]" : "bg-[#30D5FF]"}`}
+                                                        style={{ width: `${item.ratio}%` }}
+                                                    />
+                                                </View>
+                                                <Text className="text-xs text-gray-400">₹{item.spent} of ₹{item.limit}</Text>
+                                            </View>
+                                        ))
+                                    ) : (
+                                        <Text className="text-gray-400">No category budgets available.</Text>
+                                    )}
+                                </View>
+                            )}
                         </View>
 
-                        {showBudgetDetails && categoryBudgetList.length > 0 && (
-                            <View className="pt-4 border-t border-[#E5E7EB] space-y-4">
-                                <Text className="text-gray-700 font-bold">Category budgets</Text>
-                                {categoryBudgetList.map((item) => (
-                                    <View key={item.category} className="space-y-2">
-                                        <View className="flex-row justify-between items-center">
-                                            <Text className="text-gray-500">{item.category}</Text>
-                                            <Text className="font-semibold">₹{item.limit}</Text>
-                                        </View>
-                                        <View className="bg-[#F3F4F6] h-2 rounded-full overflow-hidden">
-                                            <View
-                                                className={`h-2 rounded-full ${item.ratio >= 80 ? "bg-[#F97316]" : "bg-[#30D5FF]"}`}
-                                                style={{ width: `${item.ratio}%` }}
-                                            />
-                                        </View>
-                                        <Text className="text-xs text-gray-400">₹{item.spent} of ₹{item.limit}</Text>
+                        <View style={cardShadow} className="bg-white rounded-[30px] p-5 border border-[#EFEAE3] mt-4">
+                            <View className="flex-row justify-between items-center mb-4">
+                                <Text className="text-xl font-black">Cycle history</Text>
+                                <Text className="text-sm text-gray-500">Latest month</Text>
+                            </View>
+                            {history.length ? (
+                                <View className="space-y-3">
+                                    <View className="flex-row justify-between items-center">
+                                        <Text className="text-gray-500 text-sm">{history[0].label}</Text>
+                                        <Text className="text-sm font-semibold text-[#111]">₹{history[0].expense}</Text>
                                     </View>
-                                ))}
-                            </View>
-                        )}
-                    </View>
-                </View>
-
-                <View className="mt-6 bg-white rounded-[30px] p-5 border border-[#EFEAE3]" style={cardShadow}>
-                    <View className="flex-row items-center justify-between mb-4">
-                        <Text className="text-xl font-black">Cycle history</Text>
-                        <Text className="text-sm text-gray-500">Last 4 cycles</Text>
-                    </View>
-                    {history.length ? (
-                        history.map((item, index) => (
-                            <View key={item.label} className="mb-4">
-                                <View className="flex-row justify-between items-center mb-2">
-                                    <Text className="text-gray-500 text-sm">{item.label}</Text>
-                                    <Text className="text-sm font-semibold text-[#111]">₹{item.expense}</Text>
+                                    <View className="bg-[#F3F4F6] h-3 rounded-full overflow-hidden mt-1 mb-1">
+                                        <View className="h-3 rounded-full bg-[#30D5FF]" style={{ width: `${history[0].monthlyLimit > 0 ? Math.min((history[0].expense / history[0].monthlyLimit) * 100, 100) : 0}%` }} />
+                                    </View>
+                                    <Text className="text-xs text-gray-400">Income ₹{history[0].income} · Savings ₹{history[0].savings}</Text>
                                 </View>
-                                <View className="bg-[#F3F4F6] h-3 rounded-full overflow-hidden">
-                                    <View className="h-3 rounded-full bg-[#30D5FF]" style={{ width: `${item.monthlyLimit > 0 ? Math.min((item.expense / item.monthlyLimit) * 100, 100) : 0}%` }} />
-                                </View>
-                                <View className="flex-row justify-between mt-2">
-                                    <Text className="text-xs text-gray-400">Income ₹{item.income}</Text>
-                                    <Text className="text-xs text-gray-400">Savings ₹{item.savings}</Text>
-                                </View>
-                            </View>
-                        ))
-                    ) : (
-                        <Text className="text-gray-400">No cycle history yet.</Text>
-                    )}
-                </View>
-
-                <View className="mt-6 flex-row justify-between gap-3">
-                    <TouchableOpacity
-                        onPress={() => navigation.navigate("BudgetGoals")}
-                        className="flex-1 bg-[#10B981] rounded-[28px] p-4"
-                    >
-                        <Text className="text-white text-center font-bold">Budget Goals</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        onPress={() => navigation.navigate("Transactions")}
-                        className="flex-1 bg-[#30D5FF] rounded-[28px] p-4"
-                    >
-                        <Text className="text-white text-center font-bold">Transactions</Text>
-                    </TouchableOpacity>
-                </View>
-
-
-                {/* GRID */}
-
-                <View
-                    className="
-mt-8
-flex-row
-flex-wrap
-justify-between
-"
-                >
-
-                    <Card
-                        title="Income"
-                        value={`₹${summary?.income || 0}`}
-                    />
-
-                    <Card
-                        title="Expense"
-                        value={`₹${summary?.expense || 0}`}
-                    />
-
-                    <Card
-                        title="Health"
-                        value={`${financialHealth?.score || 0}`}
-
-                        subtitle={
-                            financialHealth?.category
-                        }
-                    />
-
-                    <Card
-                        title="Categories"
-                        value={
-                            Object.keys(
-                                summary?.categories
-                                ||
-                                {}
-                            ).length
-                        }
-                    />
-
-                </View>
-
-
-                {/* CATEGORY */}
-
-                <View
-                    style={cardShadow}
-                    className="
-bg-white
-rounded-[30px]
-p-5
-mt-8
-border
-border-[#EFEAE3]
-"
-                >
-
-                    <View className="flex-row items-center justify-between mb-4">
-                        <View>
-                            <Text className="text-xl font-black">Spending breakdown</Text>
-                            <Text className="text-gray-500 text-sm mt-1">Top categories at a glance.</Text>
-                        </View>
-                        <TouchableOpacity onPress={() => setShowBreakdown((prev) => !prev)}>
-                            <Text className="text-[#30D5FF] font-semibold">{showBreakdown ? "Collapse" : "Expand"}</Text>
-                        </TouchableOpacity>
-                    </View>
-
-                    {showBreakdown ? (
-                        Object.keys(summary?.categories || {}).length ? (
-                            Object.entries(summary.categories).map(([k, v]) => (
-                                <View key={k} className="flex-row justify-between mb-4">
-                                    <Text className="text-gray-500">{k}</Text>
-                                    <Text className="font-bold">₹{v}</Text>
-                                </View>
-                            ))
-                        ) : (
-                            <Text className="text-gray-400">No transaction data</Text>
-                        )
-                    ) : (
-                        <View className="bg-[#F8FAFC] rounded-[24px] p-4">
-                            <Text className="text-gray-500">Tap to reveal detailed category spending.</Text>
-                        </View>
-                    )}
-
-                </View>
-
-                {/* ANALYTICS */}
-
-                <View
-                    style={cardShadow}
-                    className="
-bg-white
-rounded-[30px]
-p-5
-mt-8
-border
-border-[#EFEAE3]
-"
-                >
-
-                    <Text className="text-xl font-black mb-3">Analytics</Text>
-                    <Text className="text-gray-500 mb-4 text-sm">Premium charts for income, expense, and monthly trends.</Text>
-
-                    <Text className="text-gray-500 mb-2">Income vs Expense</Text>
-                    <BarChart
-                        data={{
-                            labels: ["Income", "Expense"],
-                            datasets: [{
-                                data: [incomeValue, expenseValue],
-                            }],
-                        }}
-                        width={chartWidth}
-                        height={180}
-                        yAxisLabel="₹"
-                        chartConfig={chartConfig}
-                        fromZero
-                        showValuesOnTopOfBars
-                        style={{
-                            borderRadius: 16,
-                            marginBottom: 14,
-                        }}
-                    />
-
-                    <Text className="text-gray-500 mb-2">Category breakdown</Text>
-                    {Object.keys(summary?.categories || {}).length ? (
-                        <PieChart
-                            data={Object.entries(summary.categories).map(([name, value], index) => ({
-                                name,
-                                population: Number(value) || 0,
-                                color: categoryColors[index % categoryColors.length],
-                                legendFontColor: "#4B5563",
-                                legendFontSize: 12,
-                            }))}
-                            width={chartWidth}
-                            height={140}
-                            accessor="population"
-                            backgroundColor="transparent"
-                            paddingLeft="15"
-                            chartConfig={chartConfig}
-                            absolute
-                        />
-                    ) : (
-                        <Text className="text-gray-400 mb-4">No category breakdown yet.</Text>
-                    )}
-
-                    <Text className="text-gray-500 mb-2 mt-4">Monthly trend</Text>
-                    <LineChart
-                        data={{
-                            labels: monthlyTrend.labels,
-                            datasets: [
-                                {
-                                    data: monthlyTrend.income,
-                                    color: (opacity = 1) => `rgba(34, 197, 94, ${opacity})`,
-                                    strokeWidth: 2,
-                                },
-                                {
-                                    data: monthlyTrend.expense,
-                                    color: (opacity = 1) => `rgba(239, 68, 68, ${opacity})`,
-                                    strokeWidth: 2,
-                                },
-                            ],
-                            legend: ["Income", "Expense"],
-                        }}
-                        width={chartWidth}
-                        height={170}
-                        chartConfig={chartConfig}
-                        bezier
-                        style={{
-                            borderRadius: 16,
-                        }}
-                    />
-
-                    <View className="mt-4 bg-[#F0F9FF] rounded-[26px] p-4 border border-[#BFDBFE]">
-                        <Text className="text-sm text-[#475569] mb-2">Cash flow comparison</Text>
-                        <View className="flex-row justify-between">
-                            <View>
-                                <Text className="text-xs text-[#64748B]">Previous</Text>
-                                <Text className="text-lg font-bold text-[#1E40AF]">₹{compareTotals.previous}</Text>
-                            </View>
-                            <View>
-                                <Text className="text-xs text-[#64748B]">Current</Text>
-                                <Text className="text-lg font-bold text-[#0EA5E9]">₹{compareTotals.current}</Text>
-                            </View>
+                            ) : (
+                                <Text className="text-gray-400">No cycle history yet.</Text>
+                            )}
                         </View>
                     </View>
+                )}
 
-                </View>
-
-
-                <View
-                    className="
-mt-8
-"
-                >
-
-                    <Text
-                        className="
-text-xl
-font-black
-mb-5
-"
-                    >
-
-                        Insights
-
-                    </Text>
-
-                    {
-
-                        financialHealth
-                            ?.suggestions
-                            ?.length
-
-                            ?
-
-                            financialHealth
-                                .suggestions
-                                .map(
-                                    (
-                                        item,
-                                        index
-                                    ) => (
-
-                                        <View
-                                            key={index}
-                                            className="
-bg-[#F7F7F5]
-border
-border-[#EFEAE3]
-rounded-[24px]
-p-5
-mb-4
-"
-                                        >
-
-                                            <Text
-                                                className="
-leading-7
-text-gray-700
-"
-                                            >
-
-                                                {item}
-
-                                            </Text>
-
+                {activeTab === "Analytics" && (
+                    <View className="space-y-6 mt-6">
+                        <View style={cardShadow} className="bg-white rounded-[30px] p-5 border border-[#EFEAE3]">
+                            <View className="flex-row justify-between items-center mb-4">
+                                <Text className="text-xl font-black">Spending breakdown</Text>
+                                <TouchableOpacity onPress={() => setShowBreakdown((prev) => !prev)}>
+                                    <Text className="text-[#30D5FF] font-semibold">{showBreakdown ? "Collapse" : "Expand"}</Text>
+                                </TouchableOpacity>
+                            </View>
+                            {showBreakdown ? (
+                                Object.keys(summary?.categories || {}).length ? (
+                                    Object.entries(summary.categories).map(([k, v]) => (
+                                        <View key={k} className="flex-row justify-between mb-4">
+                                            <Text className="text-gray-500">{k}</Text>
+                                            <Text className="font-bold">₹{v}</Text>
                                         </View>
-
-                                    )
+                                    ))
+                                ) : (
+                                    <Text className="text-gray-400">No transaction data</Text>
                                 )
+                            ) : (
+                                <View className="bg-[#F8FAFC] rounded-[24px] p-4">
+                                    <Text className="text-gray-500">Tap to reveal detailed category spending.</Text>
+                                </View>
+                            )}
+                        </View>
 
-                            :
+                        <View style={cardShadow} className="bg-white rounded-[30px] p-5 border border-[#EFEAE3] mt-4">
+                            <Text className="text-xl font-black mb-3">Analytics</Text>
+                            <Text className="text-gray-500 mb-4 text-sm">Premium charts for income, expense, and monthly trends.</Text>
 
-                            <View
-                                className="
-bg-white
-rounded-[24px]
-p-6
-"
-                            >
+                            <Text className="text-gray-500 mb-2">Income vs Expense</Text>
+                            <BarChart
+                                data={{
+                                    labels: ["Income", "Expense"],
+                                    datasets: [{
+                                        data: [incomeValue, expenseValue],
+                                    }],
+                                }}
+                                width={chartWidth}
+                                height={180}
+                                yAxisLabel="₹"
+                                chartConfig={chartConfig}
+                                fromZero
+                                showValuesOnTopOfBars
+                                style={{
+                                    borderRadius: 16,
+                                    marginBottom: 14,
+                                }}
+                            />
 
-                                <Text
-                                    className="
-text-gray-500
-"
-                                >
+                            <Text className="text-gray-500 mb-2">Monthly trend</Text>
+                            <LineChart
+                                data={{
+                                    labels: monthlyTrend.labels,
+                                    datasets: [
+                                        {
+                                            data: monthlyTrend.income,
+                                            color: (opacity = 1) => `rgba(34, 197, 94, ${opacity})`,
+                                            strokeWidth: 2,
+                                        },
+                                        {
+                                            data: monthlyTrend.expense,
+                                            color: (opacity = 1) => `rgba(239, 68, 68, ${opacity})`,
+                                            strokeWidth: 2,
+                                        },
+                                    ],
+                                    legend: ["Income", "Expense"],
+                                }}
+                                width={chartWidth}
+                                height={170}
+                                chartConfig={chartConfig}
+                                bezier
+                                style={{
+                                    borderRadius: 16,
+                                }}
+                            />
 
-                                    Your financial health looks stable.
-
-                                </Text>
-
+                            <View className="mt-4 bg-[#F0F9FF] rounded-[26px] p-4 border border-[#BFDBFE]">
+                                <Text className="text-sm text-[#475569] mb-2">Cash flow comparison</Text>
+                                <View className="flex-row justify-between">
+                                    <View>
+                                        <Text className="text-xs text-[#64748B]">Previous</Text>
+                                        <Text className="text-lg font-bold text-[#1E40AF]">₹{compareTotals.previous}</Text>
+                                    </View>
+                                    <View>
+                                        <Text className="text-xs text-[#64748B]">Current</Text>
+                                        <Text className="text-lg font-bold text-[#0EA5E9]">₹{compareTotals.current}</Text>
+                                    </View>
+                                </View>
                             </View>
+                        </View>
 
-                    }
-
-                </View>
+                        <View>
+                            <Text className="text-xl font-black mb-5 mt-4 ml-1">Insights</Text>
+                            {financialHealth?.suggestions?.length ? (
+                                financialHealth.suggestions.map((item, index) => (
+                                    <View key={index} className="bg-[#F7F7F5] border border-[#EFEAE3] rounded-[24px] p-5 mb-4">
+                                        <Text className="leading-7 text-gray-700">{item}</Text>
+                                    </View>
+                                ))
+                            ) : (
+                                <View className="bg-white rounded-[24px] p-6">
+                                    <Text className="text-gray-500">Your financial health looks stable.</Text>
+                                </View>
+                            )}
+                        </View>
+                    </View>
+                )}
 
             </View>
 
