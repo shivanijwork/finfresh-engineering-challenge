@@ -17,10 +17,12 @@ import AsyncStorage
 
 import {
     useNavigation,
+    useRoute,
 } from "@react-navigation/native";
 
 import {
     createTransaction,
+    updateTransaction,
 } from "../services/api";
 
 import KeyboardWrapper
@@ -36,16 +38,25 @@ export default function AddTransactionScreen() {
     const navigation =
         useNavigation();
 
+    const route = useRoute();
+
+    const transaction =
+        route?.params?.transaction;
+
+    const isEditMode = Boolean(transaction);
+
     const [loading, setLoading] =
         useState(false);
 
     const [formData, setFormData] =
         useState({
-            type: "expense",
-            category: "",
-            amount: "",
-            description: "",
-            date: "",
+            type: transaction?.type || "expense",
+            category: transaction?.category || "",
+            amount: transaction?.amount?.toString() || "",
+            description: transaction?.description || "",
+            date: transaction?.date
+                ? new Date(transaction.date).toISOString().slice(0, 10)
+                : "",
         });
 
     const update = (
@@ -151,10 +162,16 @@ export default function AddTransactionScreen() {
                 };
 
                 const res =
-                    await createTransaction(
-                        payload,
-                        token
-                    );
+                    isEditMode
+                        ? await updateTransaction(
+                            transaction._id,
+                            payload,
+                            token
+                        )
+                        : await createTransaction(
+                            payload,
+                            token
+                        );
 
                 console.log(
                     "TRANSACTION",
@@ -163,12 +180,16 @@ export default function AddTransactionScreen() {
 
                 Alert.alert(
                     "Success",
-                    "Transaction Added",
+                    isEditMode ? "Transaction Updated" : "Transaction Added",
                     [
                         {
                             text: "OK",
                             onPress: () =>
-                                navigation.navigate("Dashboard"),
+                                navigation.navigate(
+                                    isEditMode
+                                        ? "Transactions"
+                                        : "Dashboard"
+                                ),
                         },
                     ]
                 );
@@ -279,7 +300,7 @@ mb-5
 "
                         >
 
-                            Transaction Type
+                            {isEditMode ? "Edit Transaction" : "Transaction Type"}
 
                         </Text>
 

@@ -7,6 +7,10 @@ import RegisterScreen from "../Screens/RegisterScreen";
 import DashboardScreen from "../Screens/DashboardScreen";
 import AddTransactionScreen from "../Screens/AddTransactionScreen";
 import TransactionsScreen from "../Screens/TransactionsScreen";
+import ProfileScreen from "../Screens/ProfileScreen";
+import EditProfileScreen from "../Screens/EditProfileScreen";
+import SecurityScreen from "../Screens/SecurityScreen";
+import BudgetGoalsScreen from "../Screens/BudgetGoalsScreen";
 import BottomTabs from "./BottomTabs";
 
 const Stack = createNativeStackNavigator();
@@ -26,8 +30,6 @@ export default function AppNavigator() {
         <Stack.Screen name={'Home'} component={HomeScreen} />
         <Stack.Screen name={'Login'} component={LoginScreen} />
         <Stack.Screen name={'Register'} component={RegisterScreen} />
-        {/* <Stack.Screen name={'Dashboard'} component={DashboardScreen} /> */}
-
         <Stack.Screen
           name="Main"
           component={BottomTabs}
@@ -40,7 +42,18 @@ export default function AppNavigator() {
           name="Transactions"
           component={TransactionsScreen}
         />
-
+        <Stack.Screen
+          name="EditProfile"
+          component={EditProfileScreen}
+        />
+        <Stack.Screen
+          name="Security"
+          component={SecurityScreen}
+        />
+        <Stack.Screen
+          name="BudgetGoals"
+          component={BudgetGoalsScreen}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );

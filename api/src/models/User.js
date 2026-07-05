@@ -24,6 +24,29 @@ const userSchema = new mongoose.Schema(
             required: [true, "Password is required"],
             select: false,
         },
+        budgetGoals: {
+            monthlyLimit: {
+                type: Number,
+                default: 0,
+            },
+            savingsGoal: {
+                type: Number,
+                default: 0,
+            },
+            debtGoal: {
+                type: Number,
+                default: 0,
+            },
+            debtPayoffDate: {
+                type: Date,
+                default: null,
+            },
+            categoryBudgets: {
+                type: Map,
+                of: Number,
+                default: {},
+            },
+        },
     },
     {
         timestamps: true,

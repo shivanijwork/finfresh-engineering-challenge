@@ -1,145 +1,182 @@
 import { useEffect, useState } from "react";
-
 import {
     View,
     Text,
     TouchableOpacity,
+    ScrollView,
+    ActivityIndicator,
 } from "react-native";
-
-import AsyncStorage
-    from "@react-native-async-storage/async-storage";
-
-import {
-    useNavigation,
-} from "@react-navigation/native";
-
-import {
-    cardShadow,
-    darkButtonShadow,
-} from "../theme/theme";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useIsFocused, useNavigation } from "@react-navigation/native";
+import { getSummary } from "../services/api";
+import { cardShadow } from "../theme/theme";
 
 export default function ProfileScreen() {
-
     const navigation = useNavigation();
-
     const [user, setUser] = useState(null);
+    const [summary, setSummary] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const isFocused = useIsFocused();
 
     useEffect(() => {
-        (async () => {
-            const stored =
-                await AsyncStorage.getItem("user");
-            if (stored) setUser(JSON.parse(stored));
-        })();
-    }, []);
+        const loadProfile = async () => {
+            setLoading(true);
+            const storedUser = await AsyncStorage.getItem("user");
+            const token = await AsyncStorage.getItem("token");
+
+            if (storedUser) {
+                setUser(JSON.parse(storedUser));
+            }
+
+            if (token) {
+                try {
+                    const summaryRes = await getSummary(token);
+                    setSummary(summaryRes?.data?.data || null);
+                } catch (error) {
+                    console.log("PROFILE SUMMARY ERROR", error?.response?.data || error);
+                }
+            }
+
+            setLoading(false);
+        };
+
+        if (isFocused) {
+            loadProfile();
+        }
+    }, [isFocused]);
 
     const logout = async () => {
         await AsyncStorage.clear();
-        navigation.reset({
-            index: 0,
-            routes: [{ name: "Login" }],
-        });
+        navigation.replace("Login");
     };
 
-    const name = user?.name || "FinFresh User";
-    const email = user?.email || "FinFresh Member";
-    const initial = name?.[0]?.toUpperCase() || "U";
+    const profileInitial = user?.name?.trim()?.[0]?.toUpperCase() || "U";
+    const netSavings = (summary?.income || 0) - (summary?.expense || 0);
 
     return (
 
-        <View
-            className="
-flex-1
-bg-[#FCFCFA]
-justify-center
-px-6
-"
+        <ScrollView
+            className="flex-1 bg-[#FCFCFA]"
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ paddingBottom: 40 }}
         >
 
-            {/* PROFILE CARD */}
+            <View className="px-6 pt-16">
 
-            <View
-                style={cardShadow}
-                className="
-bg-white
-rounded-[36px]
-p-8
-items-center
-border
-border-[#EFEAE3]
-"
-            >
-
-                <View
-                    className="
-w-24
-h-24
-rounded-full
-bg-[#30D5FF]
-justify-center
-items-center
-"
-                >
-
-                    <Text
-                        className="
-text-white
-text-4xl
-font-black
-"
-                    >
-                        {initial}
-                    </Text>
-
+                <View className="flex-row justify-between items-start">
+                    <View>
+                        <Text className="text-3xl font-black text-[#111]">Profile</Text>
+                        <Text className="text-gray-400 mt-1">Your account overview</Text>
+                    </View>
+                    <View className="w-16 h-16 rounded-full bg-[#30D5FF] justify-center items-center">
+                        <Text className="text-white text-2xl font-black">{profileInitial}</Text>
+                    </View>
                 </View>
 
-                <Text
-                    className="
-text-2xl
-font-black
-mt-6
-text-[#111]
-"
+                <View
+                    className="mt-8 bg-white rounded-[34px] p-6 border border-[#EFEAE3]"
+                    style={cardShadow}
                 >
-                    {name}
-                </Text>
+                    <View className="flex-row justify-between items-center">
+                        <View>
+                            <Text className="text-2xl font-black text-[#111]">{user?.name || "FinFresh User"}</Text>
+                            <Text className="text-gray-500 mt-1">{user?.email || "No email available"}</Text>
+                        </View>
+                        <View className="bg-[#E0F2FE] rounded-full px-4 py-2">
+                            <Text className="text-[#2563EB] font-semibold">FinFresh Member</Text>
+                        </View>
+                    </View>
 
-                <Text
-                    className="
-text-gray-500
-mt-2
-"
+                    <View className="mt-6 bg-[#F7F7F7] rounded-[24px] p-4">
+                        <Text className="text-sm text-gray-500">Account status</Text>
+                        <Text className="text-lg font-bold text-[#111] mt-2">Active</Text>
+                    </View>
+                </View>
+
+                <View
+                    className="mt-6 bg-white rounded-[34px] p-5 border border-[#EFEAE3]"
+                    style={cardShadow}
                 >
-                    {email}
-                </Text>
+                    <View className="flex-row items-center justify-between mb-4">
+                        <View>
+                            <Text className="text-lg font-black text-[#111]">Quick actions</Text>
+                            <Text className="text-gray-400 text-sm">Swipe through core profile tools</Text>
+                        </View>
+                        {/* <Text className="text-[#30D5FF] font-semibold">Compact</Text> */}
+                    </View>
+
+                    <View className="flex-row justify-between space-x-3">
+                        <TouchableOpacity
+                            className="flex-1 bg-[#F8FAFC] rounded-[24px] p-4 border border-[#E5E7EB]"
+                            onPress={() => navigation.navigate("EditProfile")}
+                        >
+                            <Text className="text-gray-500 text-xs uppercase tracking-[0.2em]">Profile</Text>
+                            <Text className="text-[#111] font-bold text-base mt-3">Edit</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            className="flex-1 bg-[#F8FAFC] rounded-[24px] p-4 border border-[#E5E7EB]"
+                            onPress={() => navigation.navigate("Security")}
+                        >
+                            <Text className="text-gray-500 text-xs uppercase tracking-[0.2em]">Security</Text>
+                            <Text className="text-[#111] font-bold text-base mt-3">Lock</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            className="flex-1 bg-[#F8FAFC] rounded-[24px] p-4 border border-[#E5E7EB]"
+                            onPress={() => navigation.navigate("BudgetGoals")}
+                        >
+                            <Text className="text-gray-500 text-xs uppercase tracking-[0.2em]">Budget</Text>
+                            <Text className="text-[#111] font-bold text-base mt-3">Goals</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+
+                <View
+                    className="mt-6 bg-white rounded-[34px] p-6 border border-[#EFEAE3]"
+                    style={cardShadow}
+                >
+                    <Text className="text-xl font-black text-[#111]">Financial snapshot</Text>
+                    {loading ? (
+                        <View className="mt-6 items-center">
+                            <ActivityIndicator color="#30D5FF" />
+                        </View>
+                    ) : (
+                        <View className="mt-5 space-y-4">
+                            <View className="bg-[#F7F7F7] rounded-[28px] p-4 flex-row justify-between items-center">
+                                <View>
+                                    <Text className="text-gray-500">Income</Text>
+                                    <Text className="text-[#111] font-bold text-xl mt-1">₹{summary?.income || 0}</Text>
+                                </View>
+                                <Text className="text-sm text-[#10B981] font-semibold">This month</Text>
+                            </View>
+                            <View className="bg-[#F7F7F7] rounded-[28px] p-4 flex-row justify-between items-center">
+                                <View>
+                                    <Text className="text-gray-500">Expense</Text>
+                                    <Text className="text-[#111] font-bold text-xl mt-1">₹{summary?.expense || 0}</Text>
+                                </View>
+                                <Text className="text-sm text-[#EF4444] font-semibold">This month</Text>
+                            </View>
+                            <View className="bg-[#EFF6FF] rounded-[28px] p-4 flex-row justify-between items-center">
+                                <View>
+                                    <Text className="text-gray-500">Net savings</Text>
+                                    <Text className="text-[#111] font-bold text-xl mt-1">₹{netSavings}</Text>
+                                </View>
+                                <Text className="text-sm text-[#2563EB] font-semibold">Stable</Text>
+                            </View>
+                        </View>
+                    )}
+                </View>
 
                 <TouchableOpacity
-                    style={darkButtonShadow}
-                    className="
-bg-[#111]
-w-full
-py-5
-rounded-full
-mt-10
-"
                     onPress={logout}
+                    className="bg-[#111] rounded-full py-4 mt-8 mb-8"
+                    style={cardShadow}
                 >
-
-                    <Text
-                        className="
-text-white
-font-bold
-text-center
-text-lg
-"
-                    >
-                        Logout
-                    </Text>
-
+                    <Text className="text-center text-white font-bold text-lg">Logout</Text>
                 </TouchableOpacity>
 
             </View>
 
-        </View>
+        </ScrollView>
 
     );
 

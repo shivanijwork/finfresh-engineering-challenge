@@ -7,6 +7,7 @@ import {
     ActivityIndicator,
     TouchableOpacity,
     Alert,
+    Dimensions,
 } from "react-native";
 
 import AsyncStorage
@@ -15,10 +16,19 @@ import AsyncStorage
 import {
     getSummary,
     getFinancialHealth,
+    getTransactions,
+    getProfile,
 } from "../services/api";
 import {
     useNavigation,
+    useIsFocused,
 } from "@react-navigation/native";
+
+import {
+    LineChart,
+    BarChart,
+    PieChart,
+} from "react-native-chart-kit";
 
 import {
     cardShadow,
@@ -33,13 +43,151 @@ export default function DashboardScreen() {
 
     const [summary, setSummary] =
         useState(null);
+    const [budgetGoals, setBudgetGoals] = useState(null);
 
     const [
         financialHealth,
         setFinancialHealth
     ] = useState(null);
+
+    const [monthlyTrend, setMonthlyTrend] =
+        useState({
+            labels: [],
+            income: [],
+            expense: [],
+        });
+
+    const [showBudgetDetails, setShowBudgetDetails] = useState(false);
+    const [showBreakdown, setShowBreakdown] = useState(false);
+
+    const [compareTotals, setCompareTotals] =
+        useState({
+            current: 0,
+            previous: 0,
+        });
+
     const navigation =
         useNavigation();
+    const isFocused = useIsFocused();
+
+    const chartWidth =
+        Dimensions.get("window").width - 64;
+
+    const currentMonthLabel =
+        new Date().toLocaleString(
+            "default",
+            {
+                month: "long",
+                year: "numeric",
+            }
+        );
+
+    const chartConfig = {
+        backgroundGradientFrom: "#ffffff",
+        backgroundGradientTo: "#ffffff",
+        decimalPlaces: 0,
+        color: (opacity = 1) =>
+            `rgba(48, 213, 255, ${opacity})`,
+        labelColor: (opacity = 1) =>
+            `rgba(75, 85, 99, ${opacity})`,
+        propsForDots: {
+            r: "5",
+            strokeWidth: "2",
+            stroke: "#30D5FF",
+        },
+        propsForBackgroundLines: {
+            strokeDasharray: "3",
+            stroke: "rgba(220, 234, 255, 0.6)",
+        },
+        fillShadowGradient: "#30D5FF",
+        fillShadowGradientOpacity: 0.15,
+    };
+
+    const formatDate = (date) =>
+        date.toISOString().slice(0, 10);
+
+    const getMonthKey = (date) =>
+        `${date.getFullYear()}-${date.getMonth()}`;
+
+    const getMonthLabel = (date) =>
+        date.toLocaleString("default", {
+            month: "short",
+            year: "numeric",
+        });
+
+    const fetchTrendData = async (token) => {
+        const now = new Date();
+        const startDate = new Date(
+            now.getFullYear(),
+            now.getMonth() - 2,
+            1
+        );
+        const endDate = new Date(
+            now.getFullYear(),
+            now.getMonth() + 1,
+            0,
+            23,
+            59,
+            59
+        );
+
+        const trendRes = await getTransactions(token, {
+            startDate: formatDate(startDate),
+            endDate: formatDate(endDate),
+        });
+
+        const transactions =
+            trendRes?.data?.data?.data || [];
+
+        const months = [];
+        for (let i = 2; i >= 0; i -= 1) {
+            const date = new Date(
+                now.getFullYear(),
+                now.getMonth() - i,
+                1
+            );
+            months.push({
+                key: getMonthKey(date),
+                date,
+                income: 0,
+                expense: 0,
+            });
+        }
+
+        const monthMap = {};
+        months.forEach((month) => {
+            monthMap[month.key] = month;
+        });
+
+        transactions.forEach((transaction) => {
+            const txnDate = new Date(transaction.date);
+            const key = getMonthKey(txnDate);
+            const month = monthMap[key];
+            if (!month) return;
+            const amount = Number(transaction.amount) || 0;
+            if (transaction.type === "income") {
+                month.income += amount;
+            }
+            if (transaction.type === "expense") {
+                month.expense += amount;
+            }
+        });
+
+        const labels = months.map((month) => getMonthLabel(month.date));
+        const incomeValues = months.map((month) => month.income);
+        const expenseValues = months.map((month) => month.expense);
+
+        setMonthlyTrend({
+            labels,
+            income: incomeValues,
+            expense: expenseValues,
+        });
+
+        setCompareTotals({
+            current: incomeValues[2] - expenseValues[2],
+            previous: incomeValues[1] - expenseValues[1],
+        });
+    };
 
     const fetchData = async () => {
 
@@ -74,6 +222,7 @@ export default function DashboardScreen() {
 
             }
 
+            const profileRes = await getProfile(token);
             const summaryRes =
                 await getSummary(
                     token
@@ -100,11 +249,19 @@ export default function DashboardScreen() {
                 {}
             );
 
+            setBudgetGoals(
+                profileRes?.data?.data?.user?.budgetGoals
+                ||
+                {}
+            );
+
             setFinancialHealth(
                 healthRes?.data?.data
                 ||
                 {}
             );
+
+            await fetchTrendData(token);
 
         }
         catch (error) {
@@ -133,10 +290,72 @@ export default function DashboardScreen() {
     };
 
     useEffect(() => {
+        if (isFocused) {
+            fetchData();
+        }
+    }, [isFocused]);
 
-        fetchData();
+    const incomeValue = summary?.income || 0;
+    const expenseValue = summary?.expense || 0;
+    const maxChartValue = Math.max(incomeValue, expenseValue, 1);
+    const incomeRatio = Math.round((incomeValue / maxChartValue) * 100);
+    const expenseRatio = Math.round((expenseValue / maxChartValue) * 100);
+    const cashFlowValue = incomeValue - expenseValue;
+    const topCategories = Object.entries(summary?.categories || {})
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 4);
+    const categoryTotal = topCategories.reduce((sum, [, value]) => sum + value, 0) || 1;
+    const categoryColors = ["#30D5FF", "#F97316", "#10B981", "#A855F7"];
 
-    }, []);
+    const monthlyLimit = budgetGoals?.monthlyLimit || 0;
+    const savingsGoal = budgetGoals?.savingsGoal || 0;
+    const debtGoal = budgetGoals?.debtGoal || 0;
+    const categoryBudgets = budgetGoals?.categoryBudgets || {};
+
+    const monthlyUsageRatio = monthlyLimit > 0 ? Math.min((expenseValue / monthlyLimit) * 100, 100) : 0;
+    const savingsProgressRatio = savingsGoal > 0 ? Math.min(((summary?.savings || 0) / savingsGoal) * 100, 100) : 0;
+    const debtProgressRatio = debtGoal > 0 ? Math.min(((summary?.debt || 0) / debtGoal) * 100, 100) : 0;
+
+    const budgetStatus = monthlyLimit > 0
+        ? monthlyUsageRatio >= 100
+            ? "Over budget"
+            : monthlyUsageRatio >= 80
+                ? "Near limit"
+                : "On track"
+        : "No monthly budget set";
+
+    const budgetStatusColor = monthlyLimit > 0
+        ? monthlyUsageRatio >= 100
+            ? "#DC2626"
+            : monthlyUsageRatio >= 80
+                ? "#F97316"
+                : "#10B981"
+        : "#6B7280";
+
+    const categoryBudgetList = Object.entries(categoryBudgets).map(([category, limit]) => {
+        const spent = summary?.categories?.[category] || 0;
+        const ratio = limit > 0 ? Math.min((spent / limit) * 100, 100) : 0;
+        return {
+            category,
+            limit,
+            spent,
+            ratio,
+            isNearLimit: ratio >= 80,
+        };
+    });
+
+    const budgetAlerts = [];
+    if (monthlyLimit > 0 && monthlyUsageRatio >= 80) {
+        budgetAlerts.push("You're close to your monthly spending limit.");
+    }
+    categoryBudgetList.forEach((item) => {
+        if (item.isNearLimit) {
+            budgetAlerts.push(`Spending is near limit for ${item.category}.`);
+        }
+    });
+    if (budgetAlerts.length > 2) {
+        budgetAlerts.length = 2;
+    }
 
     if (loading) {
 
@@ -219,7 +438,7 @@ mt-1
 "
                         >
 
-                            Your financial snapshot
+                            {`Your financial snapshot · ${currentMonthLabel}`}
 
                         </Text>
 
@@ -302,6 +521,152 @@ mt-3
 
                 </View>
 
+                <View
+                    style={cardShadow}
+                    className="
+bg-white
+rounded-[30px]
+p-6
+mt-6
+border
+border-[#EFEAE3]
+"
+                >
+                    <Text className="text-xl font-black mb-4">Monthly snapshot</Text>
+                    <View className="flex-row flex-wrap justify-between">
+                        <View className="w-[48%] mb-4">
+                            <Text className="text-gray-500">Income</Text>
+                            <Text className="text-[#111] font-bold text-xl mt-1">₹{incomeValue}</Text>
+                        </View>
+                        <View className="w-[48%] mb-4">
+                            <Text className="text-gray-500">Expense</Text>
+                            <Text className="text-[#111] font-bold text-xl mt-1">₹{expenseValue}</Text>
+                        </View>
+                        <View className="w-[48%] mb-4">
+                            <Text className="text-gray-500">Savings</Text>
+                            <Text className="text-[#111] font-bold text-xl mt-1">₹{summary?.savings || 0}</Text>
+                        </View>
+                        <View className="w-[48%] mb-4">
+                            <Text className="text-gray-500">Debt</Text>
+                            <Text className="text-[#111] font-bold text-xl mt-1">₹{summary?.debt || 0}</Text>
+                        </View>
+                    </View>
+                    <View className="mt-3 bg-[#EFF6FF] rounded-[24px] p-4 border border-[#BFDBFE]">
+                        <Text className="text-gray-500">Cash flow</Text>
+                        <Text className="text-2xl font-bold text-[#0EA5E9] mt-2">{cashFlowValue >= 0 ? `₹${cashFlowValue}` : `-₹${Math.abs(cashFlowValue)}`}</Text>
+                    </View>
+                </View>
+
+                <View
+                    style={cardShadow}
+                    className="
+bg-white
+rounded-[30px]
+p-5
+mt-6
+border
+border-[#EFEAE3]
+"
+                >
+                    <View className="flex-row items-center justify-between mb-4">
+                        <View>
+                            <Text className="text-xl font-black">Budget overview</Text>
+                            <Text className="text-gray-500 text-sm mt-1">Track spending, savings, and debt in one view.</Text>
+                        </View>
+                        <TouchableOpacity onPress={() => setShowBudgetDetails((prev) => !prev)} className="bg-[#F3F4F6] rounded-full px-3 py-1 max-w-[35%]">
+                            <Text className="text-black text-[11px] flex-shrink font-semibold" numberOfLines={1}>
+                                 {showBudgetDetails ? "▲" : "▼"}
+                                 
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
+
+                    <View className="space-y-4">
+                        <View className="rounded-[26px] bg-[#F8FAFC] p-4 border border-[#DBEAFE]">
+                            <View className="flex-row justify-between items-center mb-3">
+                                <Text className="text-gray-500">Monthly status</Text>
+                                <View className={`rounded-full px-3 py-1`} style={{ backgroundColor: `${budgetStatusColor}20` }}>
+                                    <Text style={{ color: budgetStatusColor }} className="font-semibold text-xs">
+                                        {budgetStatus}
+                                    </Text>
+                                </View>
+                            </View>
+                            <Text className="text-sm text-gray-500 mb-2">{budgetAlerts.length ? budgetAlerts[0] : "Budget status looks healthy this month."}</Text>
+                        </View>
+
+                        <View className="space-y-4">
+                            <View>
+                                <View className="flex-row justify-between items-center mb-2">
+                                    <Text className="text-gray-500">Monthly limit</Text>
+                                    <Text className="font-semibold">₹{monthlyLimit}</Text>
+                                </View>
+                                <View className="bg-[#F3F4F6] h-3 rounded-full overflow-hidden">
+                                    <View className="h-3 rounded-full bg-[#30D5FF]" style={{ width: `${monthlyUsageRatio}%` }} />
+                                </View>
+                                <Text className="text-xs text-gray-400 mt-2">₹{expenseValue} of ₹{monthlyLimit || 0}</Text>
+                            </View>
+
+                            <View>
+                                <View className="flex-row justify-between items-center mb-2">
+                                    <Text className="text-gray-500">Savings goal</Text>
+                                    <Text className="font-semibold">₹{savingsGoal}</Text>
+                                </View>
+                                <View className="bg-[#F3F4F6] h-3 rounded-full overflow-hidden">
+                                    <View className="h-3 rounded-full bg-[#10B981]" style={{ width: `${savingsProgressRatio}%` }} />
+                                </View>
+                                <Text className="text-xs text-gray-400 mt-2">₹{summary?.savings || 0} of ₹{savingsGoal || 0}</Text>
+                            </View>
+
+                            <View>
+                                <View className="flex-row justify-between items-center mb-2">
+                                    <Text className="text-gray-500">Debt goal</Text>
+                                    <Text className="font-semibold">₹{debtGoal}</Text>
+                                </View>
+                                <View className="bg-[#F3F4F6] h-3 rounded-full overflow-hidden">
+                                    <View className="h-3 rounded-full bg-[#EF4444]" style={{ width: `${debtProgressRatio}%` }} />
+                                </View>
+                                <Text className="text-xs text-gray-400 mt-2">₹{summary?.debt || 0} of ₹{debtGoal || 0}</Text>
+                            </View>
+                        </View>
+
+                        {showBudgetDetails && categoryBudgetList.length > 0 && (
+                            <View className="pt-4 border-t border-[#E5E7EB] space-y-4">
+                                <Text className="text-gray-700 font-bold">Category budgets</Text>
+                                {categoryBudgetList.map((item) => (
+                                    <View key={item.category} className="space-y-2">
+                                        <View className="flex-row justify-between items-center">
+                                            <Text className="text-gray-500">{item.category}</Text>
+                                            <Text className="font-semibold">₹{item.limit}</Text>
+                                        </View>
+                                        <View className="bg-[#F3F4F6] h-2 rounded-full overflow-hidden">
+                                            <View
+                                                className={`h-2 rounded-full ${item.ratio >= 80 ? "bg-[#F97316]" : "bg-[#30D5FF]"}`}
+                                                style={{ width: `${item.ratio}%` }}
+                                            />
+                                        </View>
+                                        <Text className="text-xs text-gray-400">₹{item.spent} of ₹{item.limit}</Text>
+                                    </View>
+                                ))}
+                            </View>
+                        )}
+                    </View>
+                </View>
+
+                <View className="mt-6 flex-row justify-between gap-3">
+                    <TouchableOpacity
+                        onPress={() => navigation.navigate("BudgetGoals")}
+                        className="flex-1 bg-[#10B981] rounded-[28px] p-4"
+                    >
+                        <Text className="text-white text-center font-bold">Budget Goals</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        onPress={() => navigation.navigate("Transactions")}
+                        className="flex-1 bg-[#30D5FF] rounded-[28px] p-4"
+                    >
+                        <Text className="text-white text-center font-bold">Transactions</Text>
+                    </TouchableOpacity>
+                </View>
+
 
                 {/* GRID */}
 
@@ -354,118 +719,144 @@ justify-between
                     className="
 bg-white
 rounded-[30px]
-p-7
+p-5
 mt-8
 border
 border-[#EFEAE3]
 "
                 >
 
-                    <Text
-                        className="
-text-xl
-font-black
-mb-6
-"
-                    >
+                    <View className="flex-row items-center justify-between mb-4">
+                        <View>
+                            <Text className="text-xl font-black">Spending breakdown</Text>
+                            <Text className="text-gray-500 text-sm mt-1">Top categories at a glance.</Text>
+                        </View>
+                        <TouchableOpacity onPress={() => setShowBreakdown((prev) => !prev)}>
+                            <Text className="text-[#30D5FF] font-semibold">{showBreakdown ? "Collapse" : "Expand"}</Text>
+                        </TouchableOpacity>
+                    </View>
 
-                        Spending Breakdown
-
-                    </Text>
-
-                    {
-
-                        Object.keys(
-                            summary?.categories
-                            ||
-                            {}
-                        ).length
-
-                            ?
-
-                            Object.entries(
-                                summary.categories
-                            ).map(
-                                ([k, v]) => (
-
-                                    <View
-                                        key={k}
-                                        className="
-flex-row
-justify-between
-mb-5
-"
-                                    >
-
-                                        <Text
-                                            className="
-text-gray-500
-"
-                                        >
-
-                                            {k}
-
-                                        </Text>
-
-                                        <Text
-                                            className="
-font-bold
-"
-                                        >
-
-                                            ₹{v}
-
-                                        </Text>
-
-                                    </View>
-
-                                )
-                            )
-
-                            :
-
-                            <Text
-                                className="
-text-gray-400
-"
-                            >
-
-                                No transaction data
-
-                            </Text>
-
-                    }
+                    {showBreakdown ? (
+                        Object.keys(summary?.categories || {}).length ? (
+                            Object.entries(summary.categories).map(([k, v]) => (
+                                <View key={k} className="flex-row justify-between mb-4">
+                                    <Text className="text-gray-500">{k}</Text>
+                                    <Text className="font-bold">₹{v}</Text>
+                                </View>
+                            ))
+                        ) : (
+                            <Text className="text-gray-400">No transaction data</Text>
+                        )
+                    ) : (
+                        <View className="bg-[#F8FAFC] rounded-[24px] p-4">
+                            <Text className="text-gray-500">Tap to reveal detailed category spending.</Text>
+                        </View>
+                    )}
 
                 </View>
 
+                {/* ANALYTICS */}
 
-                {/* INSIGHTS */}
-
-                <TouchableOpacity
-                    onPress={() => navigation.navigate("Transactions")}
+                <View
+                    style={cardShadow}
                     className="
-mt-8
-bg-[#30D5FF]
+bg-white
 rounded-[30px]
 p-5
-mb-6
+mt-8
+border
+border-[#EFEAE3]
 "
                 >
 
-                    <Text
-                        className="
-text-white
-text-lg
-font-bold
-text-center
-"
-                    >
+                    <Text className="text-xl font-black mb-3">Analytics</Text>
+                    <Text className="text-gray-500 mb-4 text-sm">Premium charts for income, expense, and monthly trends.</Text>
 
-                        View Transaction History
+                    <Text className="text-gray-500 mb-2">Income vs Expense</Text>
+                    <BarChart
+                        data={{
+                            labels: ["Income", "Expense"],
+                            datasets: [{
+                                data: [incomeValue, expenseValue],
+                            }],
+                        }}
+                        width={chartWidth}
+                        height={180}
+                        yAxisLabel="₹"
+                        chartConfig={chartConfig}
+                        fromZero
+                        showValuesOnTopOfBars
+                        style={{
+                            borderRadius: 16,
+                            marginBottom: 14,
+                        }}
+                    />
 
-                    </Text>
+                    <Text className="text-gray-500 mb-2">Category breakdown</Text>
+                    {Object.keys(summary?.categories || {}).length ? (
+                        <PieChart
+                            data={Object.entries(summary.categories).map(([name, value], index) => ({
+                                name,
+                                population: Number(value) || 0,
+                                color: categoryColors[index % categoryColors.length],
+                                legendFontColor: "#4B5563",
+                                legendFontSize: 12,
+                            }))}
+                            width={chartWidth}
+                            height={140}
+                            accessor="population"
+                            backgroundColor="transparent"
+                            paddingLeft="15"
+                            chartConfig={chartConfig}
+                            absolute
+                        />
+                    ) : (
+                        <Text className="text-gray-400 mb-4">No category breakdown yet.</Text>
+                    )}
 
-                </TouchableOpacity>
+                    <Text className="text-gray-500 mb-2 mt-4">Monthly trend</Text>
+                    <LineChart
+                        data={{
+                            labels: monthlyTrend.labels,
+                            datasets: [
+                                {
+                                    data: monthlyTrend.income,
+                                    color: (opacity = 1) => `rgba(34, 197, 94, ${opacity})`,
+                                    strokeWidth: 2,
+                                },
+                                {
+                                    data: monthlyTrend.expense,
+                                    color: (opacity = 1) => `rgba(239, 68, 68, ${opacity})`,
+                                    strokeWidth: 2,
+                                },
+                            ],
+                            legend: ["Income", "Expense"],
+                        }}
+                        width={chartWidth}
+                        height={170}
+                        chartConfig={chartConfig}
+                        bezier
+                        style={{
+                            borderRadius: 16,
+                        }}
+                    />
+
+                    <View className="mt-4 bg-[#F0F9FF] rounded-[26px] p-4 border border-[#BFDBFE]">
+                        <Text className="text-sm text-[#475569] mb-2">Cash flow comparison</Text>
+                        <View className="flex-row justify-between">
+                            <View>
+                                <Text className="text-xs text-[#64748B]">Previous</Text>
+                                <Text className="text-lg font-bold text-[#1E40AF]">₹{compareTotals.previous}</Text>
+                            </View>
+                            <View>
+                                <Text className="text-xs text-[#64748B]">Current</Text>
+                                <Text className="text-lg font-bold text-[#0EA5E9]">₹{compareTotals.current}</Text>
+                            </View>
+                        </View>
+                    </View>
+
+                </View>
+
 
                 <View
                     className="

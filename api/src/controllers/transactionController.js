@@ -70,7 +70,7 @@ export const getTransactions = catchAsync(async (req, res) => {
 
     const skip = (page - 1) * limit;
 
-    const { type, category } = req.query;
+    const { type, category, startDate, endDate } = req.query;
 
     // Filter object
     const filters = {
@@ -84,6 +84,30 @@ export const getTransactions = catchAsync(async (req, res) => {
 
     if (category) {
         filters.category = category;
+    }
+
+    if (startDate || endDate) {
+        filters.date = {};
+
+        if (startDate) {
+            const parsedStart = new Date(startDate);
+            if (!isNaN(parsedStart)) {
+                parsedStart.setHours(0, 0, 0, 0);
+                filters.date.$gte = parsedStart;
+            }
+        }
+
+        if (endDate) {
+            const parsedEnd = new Date(endDate);
+            if (!isNaN(parsedEnd)) {
+                parsedEnd.setHours(23, 59, 59, 999);
+                filters.date.$lte = parsedEnd;
+            }
+        }
+
+        if (Object.keys(filters.date).length === 0) {
+            delete filters.date;
+        }
     }
 
     // Fetch transactions
@@ -111,6 +135,98 @@ export const getTransactions = catchAsync(async (req, res) => {
                 total,
             },
         }
+    );
+}
+);
+
+export const updateTransaction = catchAsync(async (req, res) => {
+    const { id } = req.params;
+    const { type, category, amount, date, description } = req.body;
+
+    if (!type || !category || !amount || !date) {
+        return errorResponse(
+            res,
+            "All required fields must be provided",
+            400
+        );
+    }
+
+    if (amount <= 0) {
+        return errorResponse(
+            res,
+            "Amount must be greater than 0",
+            400
+        );
+    }
+
+    const allowedTypes = [
+        "income",
+        "expense",
+        "investment",
+        "debt",
+    ];
+
+    if (!allowedTypes.includes(type)) {
+        return errorResponse(
+            res,
+            "Invalid transaction type",
+            400
+        );
+    }
+
+    const transaction = await Transaction.findOne({
+        _id: id,
+        userId: req.user.id,
+    });
+
+    if (!transaction) {
+        return errorResponse(
+            res,
+            "Transaction not found",
+            404
+        );
+    }
+
+    transaction.type = type;
+    transaction.category = category;
+    transaction.amount = amount;
+    transaction.date = date;
+    transaction.description = description;
+
+    await transaction.save();
+
+    return successResponse(
+        res,
+        "Transaction updated successfully",
+        200,
+        transaction
+    );
+}
+);
+
+export const deleteTransaction = catchAsync(async (req, res) => {
+    const { id } = req.params;
+
+    const transaction = await Transaction.findOne({
+        _id: id,
+        userId: req.user.id,
+    });
+
+    if (!transaction) {
+        return errorResponse(
+            res,
+            "Transaction not found",
+            404
+        );
+    }
+
+    await transaction.deleteOne();
+
+    return successResponse(
+        res,
+        "Transaction deleted successfully",
+        200,
+        { id }
     );
 }
 );
@@ -179,6 +295,14 @@ export const getSummary = catchAsync(async (req, res) => {
     // Savings
     const savings = income - expense;
 
+    // Debt
+    let debt = 0;
+    transactions.forEach((transaction) => {
+        if (transaction.type === "debt") {
+            debt += Math.max(transaction.amount, 0);
+        }
+    });
+
     // Savings rate
     const savingsRate = income > 0 ? Number(
         (
@@ -198,6 +322,7 @@ export const getSummary = catchAsync(async (req, res) => {
             expense,
             savings,
             savingsRate,
+            debt,
             categories,
         }
     );

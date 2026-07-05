@@ -48,9 +48,30 @@ export const getFinancialHealth = (token) =>
     }
   );
 
+export const getProfile = (token) =>
+  API.get(
+    "/profile",
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+export const updateProfile = (data, token) =>
+  API.put(
+    "/profile",
+    data,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
 // TRANSACTIONS
 
-export const getTransactions = (token) =>
+export const getTransactions = (token, params = {}) =>
   API.get(
     "/transactions",
     {
@@ -58,6 +79,7 @@ export const getTransactions = (token) =>
         Authorization:
           `Bearer ${token}`,
       },
+      params,
     }
   );
 
@@ -77,5 +99,26 @@ Authorization:
 },
 }
 );
+
+export const updateTransaction = (id, data, token) =>
+  API.put(
+    `/transactions/${id}`,
+    data,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+export const deleteTransaction = (id, token) =>
+  API.delete(
+    `/transactions/${id}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
 
 export default API;

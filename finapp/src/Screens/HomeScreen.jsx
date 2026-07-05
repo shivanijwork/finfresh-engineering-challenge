@@ -6,6 +6,7 @@ import {
 } from "react-native";
 
 import {
+    useIsFocused,
     useNavigation,
 } from "@react-navigation/native";
 
@@ -28,12 +29,13 @@ export default function HomeScreen() {
 
     const [user, setUser] =
         useState(null);
+    const isFocused = useIsFocused();
 
     useEffect(() => {
-
-        loadUser();
-
-    }, []);
+        if (isFocused) {
+            loadUser();
+        }
+    }, [isFocused]);
 
     const loadUser =
         async () => {
