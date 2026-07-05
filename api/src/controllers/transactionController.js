@@ -1,4 +1,5 @@
 import Transaction from "../models/Transaction.js";
+import User from "../models/User.js";
 import catchAsync from "../utils/catchAsync.js";
 import { successResponse, errorResponse } from "../utils/errorHandling.js";
 import calculateFinancialHealth from "../utils/financialScore.js";
@@ -231,6 +232,56 @@ export const deleteTransaction = catchAsync(async (req, res) => {
 }
 );
 
+const getCyclePeriod = (referenceDate, cycleStartDay) => {
+    const date = new Date(referenceDate);
+    date.setHours(0, 0, 0, 0);
+
+    let startYear = date.getFullYear();
+    let startMonth = date.getMonth();
+    const day = date.getDate();
+
+    if (day < cycleStartDay) {
+        startMonth -= 1;
+        if (startMonth < 0) {
+            startMonth = 11;
+            startYear -= 1;
+        }
+    }
+
+    const start = new Date(startYear, startMonth, cycleStartDay, 0, 0, 0, 0);
+    const nextMonth = startMonth === 11 ? 0 : startMonth + 1;
+    const nextYear = startMonth === 11 ? startYear + 1 : startYear;
+    const end = new Date(nextYear, nextMonth, cycleStartDay, 0, 0, 0, 0);
+    end.setMilliseconds(-1);
+
+    return { start, end };
+};
+
+const getCyclePeriods = (cycleStartDay, count, referenceDate = new Date()) => {
+    const periods = [];
+    let { start, end } = getCyclePeriod(referenceDate, cycleStartDay);
+
+    for (let i = 0; i < count; i += 1) {
+        const labelStart = new Date(start);
+        const labelEnd = new Date(end);
+
+        periods.push({
+            label: `${labelStart.toLocaleDateString("default", { month: "short", day: "numeric" })} – ${labelEnd.toLocaleDateString("default", { month: "short", day: "numeric" })}`,
+            start: new Date(start),
+            end: new Date(end),
+        });
+
+        const previousEnd = new Date(start);
+        previousEnd.setMilliseconds(-1);
+        const previousStartYear = previousEnd.getMonth() === 0 ? previousEnd.getFullYear() - 1 : previousEnd.getFullYear();
+        const previousStartMonth = previousEnd.getMonth() === 0 ? 11 : previousEnd.getMonth() - 1;
+        start = new Date(previousStartYear, previousStartMonth, cycleStartDay, 0, 0, 0, 0);
+        end = new Date(previousEnd);
+    }
+
+    return periods.reverse();
+};
+
 export const getSummary = catchAsync(async (req, res) => {
     const userId = req.user.id;
 
@@ -328,6 +379,68 @@ export const getSummary = catchAsync(async (req, res) => {
     );
 }
 );
+
+export const getBudgetHistory = catchAsync(async (req, res) => {
+    const userId = req.user.id;
+    const user = await User.findById(userId);
+
+    if (!user) {
+        return errorResponse(res, "User not found", 404);
+    }
+
+    const cycleStartDay = user.budgetGoals?.cycleStartDay || 1;
+    const periods = getCyclePeriods(cycleStartDay, 4);
+    const history = [];
+
+    for (const period of periods) {
+        const transactions = await Transaction.find({
+            userId,
+            date: {
+                $gte: period.start,
+                $lte: period.end,
+            },
+        });
+
+        let income = 0;
+        let expense = 0;
+        let debt = 0;
+
+        const categories = {};
+
+        transactions.forEach((transaction) => {
+            const amount = Math.max(transaction.amount, 0);
+            if (transaction.type === "income") {
+                income += amount;
+            }
+            if (transaction.type === "expense") {
+                expense += amount;
+            }
+            if (transaction.type === "debt") {
+                debt += amount;
+            }
+            if (categories[transaction.category]) {
+                categories[transaction.category] += amount;
+            } else {
+                categories[transaction.category] = amount;
+            }
+        });
+
+        const savings = income - expense;
+        history.push({
+            label: period.label,
+            start: period.start,
+            end: period.end,
+            income,
+            expense,
+            savings,
+            debt,
+            categories,
+            monthlyLimit: user.budgetGoals?.monthlyLimit || 0,
+        });
+    }
+
+    return successResponse(res, "Budget history fetched successfully", 200, history);
+});
 
 export const getFinancialHealth = catchAsync(async (req, res) => {
     const userId = req.user.id;

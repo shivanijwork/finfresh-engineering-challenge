@@ -18,7 +18,10 @@ const budgetLabels = [
     { key: "monthlyLimit", label: "Monthly spending limit", placeholder: "₹0" },
     { key: "savingsGoal", label: "Savings goal", placeholder: "₹0" },
     { key: "debtGoal", label: "Debt payoff goal", placeholder: "₹0" },
+    { key: "cycleStartDay", label: "Budget cycle start day", placeholder: "1-28" },
 ];
+
+const cycleOptions = [1, 5, 10, 15, 20, 25];
 
 export default function BudgetGoalsScreen() {
     const navigation = useNavigation();
@@ -30,6 +33,7 @@ export default function BudgetGoalsScreen() {
         savingsGoal: "",
         debtGoal: "",
         debtPayoffDate: "",
+        cycleStartDay: "1",
     });
     const [categoryBudgets, setCategoryBudgets] = useState({});
     const [newCategory, setNewCategory] = useState("");
@@ -56,6 +60,7 @@ export default function BudgetGoalsScreen() {
                     debtPayoffDate: budgetGoals.debtPayoffDate
                         ? new Date(budgetGoals.debtPayoffDate).toISOString().slice(0, 10)
                         : "",
+                    cycleStartDay: budgetGoals.cycleStartDay?.toString() || "1",
                 });
                 setCategoryBudgets(
                     Object.fromEntries(
@@ -74,6 +79,11 @@ export default function BudgetGoalsScreen() {
 
     const setGoal = (key, value) => {
         setGoals((prev) => ({ ...prev, [key]: value }));
+    };
+
+    const isValidCycleDay = (value) => {
+        const day = Number(value);
+        return Number.isInteger(day) && day >= 1 && day <= 28;
     };
 
     const handleRemoveCategory = (category) => {
@@ -108,16 +118,20 @@ export default function BudgetGoalsScreen() {
         setSaving(true);
 
         try {
+            const cycleStartDay = Number(goals.cycleStartDay) || 1;
+            if (!isValidCycleDay(cycleStartDay)) {
+                Alert.alert("Error", "Budget cycle start day must be a whole number between 1 and 28.");
+                setSaving(false);
+                return;
+            }
+
             const budgetGoals = {
                 monthlyLimit: Number(goals.monthlyLimit) || 0,
                 savingsGoal: Number(goals.savingsGoal) || 0,
                 debtGoal: Number(goals.debtGoal) || 0,
                 debtPayoffDate: goals.debtPayoffDate || null,
-                categoryBudgets: Object.fromEntries(
-                    Object.entries(categoryBudgets).map(([key, value]) => [key, Number(value) || 0]),
-                ),
-            };
-
+                cycleStartDay,
+            }
             const res = await updateProfile({ budgetGoals }, token);
             const updatedUser = res?.data?.data?.user;
             if (updatedUser) {
@@ -171,14 +185,45 @@ export default function BudgetGoalsScreen() {
                                 {budgetLabels.map((item) => (
                                     <View key={item.key} className="mb-5">
                                         <Text className="text-gray-500 mb-2">{item.label}</Text>
-                                        <TextInput
-                                            value={goals[item.key]}
-                                            onChangeText={(text) => setGoal(item.key, text)}
-                                            keyboardType="numeric"
-                                            placeholder={item.placeholder}
-                                            placeholderTextColor="#9CA3AF"
-                                            className="bg-[#F7F7F7] rounded-[24px] px-4 py-4 text-[#111] border border-[#E5E7EB]"
-                                        />
+                                        {item.key === "cycleStartDay" ? (
+                                            <View>
+                                                <View className="flex-row flex-wrap gap-2 mb-3">
+                                                    {cycleOptions.map((option) => (
+                                                        <TouchableOpacity
+                                                            key={option}
+                                                            onPress={() => setGoal(item.key, option.toString())}
+                                                            className={`rounded-full px-3 py-2 border ${goals[item.key] === option.toString() ? "border-[#30D5FF] bg-[#EFF6FF]" : "border-[#E5E7EB] bg-[#F7F7F7]"}`}
+                                                        >
+                                                            <Text className={`text-sm font-semibold ${goals[item.key] === option.toString() ? "text-[#111]" : "text-[#666]"}`}>
+                                                                {option}
+                                                            </Text>
+                                                        </TouchableOpacity>
+                                                    ))}
+                                                </View>
+                                                <View className="bg-[#F7F7F7] rounded-[24px] px-4 py-4 border border-[#E5E7EB]">
+                                                    <TextInput
+                                                        value={goals[item.key]}
+                                                        onChangeText={(text) => setGoal(item.key, text)}
+                                                        keyboardType="numeric"
+                                                        placeholder={item.placeholder}
+                                                        placeholderTextColor="#9CA3AF"
+                                                        className="text-[#111]"
+                                                    />
+                                                    <Text className="text-xs text-gray-400 mt-2">
+                                                        Enter a day between 1 and 28 for your monthly budget cycle.
+                                                    </Text>
+                                                </View>
+                                            </View>
+                                        ) : (
+                                            <TextInput
+                                                value={goals[item.key]}
+                                                onChangeText={(text) => setGoal(item.key, text)}
+                                                keyboardType="numeric"
+                                                placeholder={item.placeholder}
+                                                placeholderTextColor="#9CA3AF"
+                                                className="bg-[#F7F7F7] rounded-[24px] px-4 py-4 text-[#111] border border-[#E5E7EB]"
+                                            />
+                                        )}
                                     </View>
                                 ))}
                                 <View className="mb-5">

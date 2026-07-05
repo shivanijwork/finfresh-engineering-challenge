@@ -41,6 +41,12 @@ const userSchema = new mongoose.Schema(
                 type: Date,
                 default: null,
             },
+            cycleStartDay: {
+                type: Number,
+                default: 1,
+                min: 1,
+                max: 28,
+            },
             categoryBudgets: {
                 type: Map,
                 of: Number,

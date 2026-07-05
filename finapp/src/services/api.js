@@ -48,6 +48,16 @@ export const getFinancialHealth = (token) =>
     }
   );
 
+export const getBudgetHistory = (token) =>
+  API.get(
+    "/transactions/history",
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
 export const getProfile = (token) =>
   API.get(
     "/profile",

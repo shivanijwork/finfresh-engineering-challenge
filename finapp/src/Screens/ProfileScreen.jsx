@@ -8,13 +8,14 @@ import {
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
-import { getSummary } from "../services/api";
+import { getSummary, getProfile } from "../services/api";
 import { cardShadow } from "../theme/theme";
 
 export default function ProfileScreen() {
     const navigation = useNavigation();
     const [user, setUser] = useState(null);
     const [summary, setSummary] = useState(null);
+    const [budgetGoals, setBudgetGoals] = useState({});
     const [loading, setLoading] = useState(true);
     const isFocused = useIsFocused();
 
@@ -30,10 +31,18 @@ export default function ProfileScreen() {
 
             if (token) {
                 try {
-                    const summaryRes = await getSummary(token);
+                    const [summaryRes, profileRes] = await Promise.all([
+                        getSummary(token),
+                        getProfile(token),
+                    ]);
                     setSummary(summaryRes?.data?.data || null);
+                    const profileUser = profileRes?.data?.data?.user || null;
+                    if (profileUser) {
+                        setUser(profileUser);
+                        setBudgetGoals(profileUser.budgetGoals || {});
+                    }
                 } catch (error) {
-                    console.log("PROFILE SUMMARY ERROR", error?.response?.data || error);
+                    console.log("PROFILE LOAD ERROR", error?.response?.data || error);
                 }
             }
 
@@ -52,6 +61,14 @@ export default function ProfileScreen() {
 
     const profileInitial = user?.name?.trim()?.[0]?.toUpperCase() || "U";
     const netSavings = (summary?.income || 0) - (summary?.expense || 0);
+    const monthlyLimit = Number(budgetGoals?.monthlyLimit || 0);
+    const savingsGoal = Number(budgetGoals?.savingsGoal || 0);
+    const debtGoal = Number(budgetGoals?.debtGoal || 0);
+    const monthlySpend = Number(summary?.expense || 0);
+    const monthlyRemaining = monthlyLimit > 0 ? Math.max(monthlyLimit - monthlySpend, 0) : 0;
+    const monthlyUsageRatio = monthlyLimit > 0 ? Math.min((monthlySpend / monthlyLimit) * 100, 100) : 0;
+    const savingsProgress = savingsGoal > 0 ? Math.min(((summary?.savings || 0) / savingsGoal) * 100, 100) : 0;
+    const debtProgress = debtGoal > 0 ? Math.min(((summary?.debt || 0) / debtGoal) * 100, 100) : 0;
 
     return (
 
@@ -82,9 +99,9 @@ export default function ProfileScreen() {
                             <Text className="text-2xl font-black text-[#111]">{user?.name || "FinFresh User"}</Text>
                             <Text className="text-gray-500 mt-1">{user?.email || "No email available"}</Text>
                         </View>
-                        <View className="bg-[#E0F2FE] rounded-full px-4 py-2">
+                        {/* <View className="bg-[#E0F2FE] rounded-full px-4 py-2">
                             <Text className="text-[#2563EB] font-semibold">FinFresh Member</Text>
-                        </View>
+                        </View> */}
                     </View>
 
                     <View className="mt-6 bg-[#F7F7F7] rounded-[24px] p-4">
@@ -125,10 +142,64 @@ export default function ProfileScreen() {
                                     <Text className="text-gray-500">Net savings</Text>
                                     <Text className="text-[#111] font-bold text-xl mt-1">₹{netSavings}</Text>
                                 </View>
-                                <Text className="text-sm text-[#2563EB] font-semibold">Stable</Text>
+                                <Text className="text-sm text-[#2563EB] font-semibold"> {netSavings > 0 ? "Stable" : "Unstable"}</Text>
                             </View>
                         </View>
                     )}
+                </View>
+
+                <View
+                    className="mt-6 bg-white rounded-[34px] p-6 border border-[#EFEAE3]"
+                    style={cardShadow}
+                >
+                    <View className="flex-row justify-between items-start mb-4">
+                        <View>
+                            <Text className="text-xl font-black text-[#111]">Budget summary</Text>
+                            <Text className="text-gray-400 text-sm mt-1">Quick look at your active spending goals.</Text>
+                        </View>
+                        <TouchableOpacity
+                            onPress={() => navigation.navigate("BudgetGoals")}
+                            className="rounded-full bg-[#30D5FF] px-4 py-2"
+                        >
+                            <Text className="text-white font-semibold">Manage</Text>
+                        </TouchableOpacity>
+                    </View>
+                    <View className="space-y-4">
+                        <View className="bg-[#F7F7F7] rounded-[24px] p-4">
+                            <View className="flex-row justify-between items-center mb-2">
+                                <Text className="text-gray-500">Monthly limit</Text>
+                                <Text className="text-[#111] font-bold">₹{monthlyLimit}</Text>
+                            </View>
+                            <View className="bg-[#E5E7EB] h-3 rounded-full overflow-hidden">
+                                <View className="h-3 rounded-full bg-[#30D5FF]" style={{ width: `${monthlyUsageRatio}%` }} />
+                            </View>
+                            <Text className="text-xs text-gray-400 mt-2">
+                                {monthlyLimit > 0 ? `${monthlyRemaining > 0 ? `₹${monthlyRemaining} left` : `Limit reached`}` : "No monthly budget set"}
+                            </Text>
+                        </View>
+                        <View className="flex-row justify-between gap-3">
+                            <View className="flex-1 bg-[#F7F7F7] rounded-[24px] p-4">
+                                <Text className="text-gray-500">Savings goal</Text>
+                                <Text className="text-[#111] font-bold text-lg mt-1">₹{savingsGoal}</Text>
+                                <View className="bg-[#E5E7EB] h-3 rounded-full overflow-hidden mt-3">
+                                    <View className="h-3 rounded-full bg-[#10B981]" style={{ width: `${savingsProgress}%` }} />
+                                </View>
+                                <Text className="text-xs text-gray-400 mt-2">
+                                    {savingsGoal > 0 ? `${Math.round(savingsProgress)}% reached` : "Not set"}
+                                </Text>
+                            </View>
+                            <View className="flex-1 bg-[#F7F7F7] rounded-[24px] p-4">
+                                <Text className="text-gray-500">Debt goal</Text>
+                                <Text className="text-[#111] font-bold text-lg mt-1">₹{debtGoal}</Text>
+                                <View className="bg-[#E5E7EB] h-3 rounded-full overflow-hidden mt-3">
+                                    <View className="h-3 rounded-full bg-[#EF4444]" style={{ width: `${debtProgress}%` }} />
+                                </View>
+                                <Text className="text-xs text-gray-400 mt-2">
+                                    {debtGoal > 0 ? `${Math.round(debtProgress)}% progress` : "Not set"}
+                                </Text>
+                            </View>
+                        </View>
+                    </View>
                 </View>
 
                 <View

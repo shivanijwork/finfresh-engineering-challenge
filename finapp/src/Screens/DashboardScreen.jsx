@@ -18,6 +18,7 @@ import {
     getFinancialHealth,
     getTransactions,
     getProfile,
+    getBudgetHistory,
 } from "../services/api";
 import {
     useNavigation,
@@ -60,6 +61,7 @@ export default function DashboardScreen() {
     const [showBudgetDetails, setShowBudgetDetails] = useState(false);
     const [showBreakdown, setShowBreakdown] = useState(false);
 
+    const [history, setHistory] = useState([]);
     const [compareTotals, setCompareTotals] =
         useState({
             current: 0,
@@ -238,6 +240,8 @@ export default function DashboardScreen() {
                     token
                 );
 
+            const historyRes = await getBudgetHistory(token);
+
             console.log(
                 "HEALTH",
                 healthRes.data
@@ -254,6 +258,8 @@ export default function DashboardScreen() {
                 ||
                 {}
             );
+
+            setHistory(historyRes?.data?.data || []);
 
             setFinancialHealth(
                 healthRes?.data?.data
@@ -310,6 +316,7 @@ export default function DashboardScreen() {
     const monthlyLimit = budgetGoals?.monthlyLimit || 0;
     const savingsGoal = budgetGoals?.savingsGoal || 0;
     const debtGoal = budgetGoals?.debtGoal || 0;
+    const cycleStartDay = budgetGoals?.cycleStartDay || 1;
     const categoryBudgets = budgetGoals?.categoryBudgets || {};
 
     const monthlyUsageRatio = monthlyLimit > 0 ? Math.min((expenseValue / monthlyLimit) * 100, 100) : 0;
@@ -650,6 +657,32 @@ border-[#EFEAE3]
                             </View>
                         )}
                     </View>
+                </View>
+
+                <View className="mt-6 bg-white rounded-[30px] p-5 border border-[#EFEAE3]" style={cardShadow}>
+                    <View className="flex-row items-center justify-between mb-4">
+                        <Text className="text-xl font-black">Cycle history</Text>
+                        <Text className="text-sm text-gray-500">Last 4 cycles</Text>
+                    </View>
+                    {history.length ? (
+                        history.map((item, index) => (
+                            <View key={item.label} className="mb-4">
+                                <View className="flex-row justify-between items-center mb-2">
+                                    <Text className="text-gray-500 text-sm">{item.label}</Text>
+                                    <Text className="text-sm font-semibold text-[#111]">₹{item.expense}</Text>
+                                </View>
+                                <View className="bg-[#F3F4F6] h-3 rounded-full overflow-hidden">
+                                    <View className="h-3 rounded-full bg-[#30D5FF]" style={{ width: `${item.monthlyLimit > 0 ? Math.min((item.expense / item.monthlyLimit) * 100, 100) : 0}%` }} />
+                                </View>
+                                <View className="flex-row justify-between mt-2">
+                                    <Text className="text-xs text-gray-400">Income ₹{item.income}</Text>
+                                    <Text className="text-xs text-gray-400">Savings ₹{item.savings}</Text>
+                                </View>
+                            </View>
+                        ))
+                    ) : (
+                        <Text className="text-gray-400">No cycle history yet.</Text>
+                    )}
                 </View>
 
                 <View className="mt-6 flex-row justify-between gap-3">

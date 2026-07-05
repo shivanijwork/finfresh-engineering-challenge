@@ -185,24 +185,12 @@ export const updateProfile = catchAsync(async (req, res) => {
         ? new Date(budgetGoals.debtPayoffDate)
         : null;
     }
-    if (budgetGoals.categoryBudgets !== undefined) {
-      user.budgetGoals.categoryBudgets = budgetGoals.categoryBudgets;
+    if (budgetGoals.cycleStartDay !== undefined) {
+      const parsedDay = Number(budgetGoals.cycleStartDay);
+      user.budgetGoals.cycleStartDay =
+        Number.isInteger(parsedDay) && parsedDay >= 1 && parsedDay <= 28
+          ? parsedDay
+          : 1;
     }
-  }
-
-  await user.save();
-
-  return successResponse(
-    res,
-    "Profile updated successfully",
-    200,
-    {
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        budgetGoals: user.budgetGoals || {},
-      },
-    }
-  );
-});
+  
+}});
