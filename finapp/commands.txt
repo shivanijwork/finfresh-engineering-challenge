@@ -1,0 +1,4 @@
+npx eas-cli login
+
+# 2. Android APK build (cloud)
+npx eas-cli build --platform android --profile preview
