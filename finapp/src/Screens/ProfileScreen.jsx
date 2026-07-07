@@ -104,7 +104,7 @@ export default function ProfileScreen() {
                         </View> */}
                     </View>
 
-                    <View className="mt-6 bg-[#F7F7F7] rounded-[24px] p-4">
+                    <View className="mt-6 bg-[#F7F7F5] rounded-[24px] p-4">
                         <Text className="text-sm text-gray-500">Account status</Text>
                         <Text className="text-lg font-bold text-[#111] mt-2">Active</Text>
                     </View>
@@ -123,14 +123,14 @@ export default function ProfileScreen() {
                         </View>
                     ) : (
                         <View className="mt-5 space-y-4">
-                            <View className="bg-[#F7F7F7] rounded-[28px] p-4 flex-row justify-between items-center">
+                            <View className="bg-[#F7F7F5] rounded-[28px] p-4 flex-row justify-between items-center">
                                 <View>
                                     <Text className="text-gray-500">Income</Text>
                                     <Text className="text-[#111] font-bold text-xl mt-1">₹{summary?.income || 0}</Text>
                                 </View>
                                 <Text className="text-sm text-[#10B981] font-semibold">This month</Text>
                             </View>
-                            <View className="bg-[#F7F7F7] rounded-[28px] p-4 flex-row justify-between items-center">
+                            <View className="bg-[#F7F7F5] rounded-[28px] p-4 flex-row justify-between items-center">
                                 <View>
                                     <Text className="text-gray-500">Expense</Text>
                                     <Text className="text-[#111] font-bold text-xl mt-1">₹{summary?.expense || 0}</Text>
@@ -165,12 +165,12 @@ export default function ProfileScreen() {
                         </TouchableOpacity>
                     </View>
                     <View className="space-y-4">
-                        <View className="bg-[#F7F7F7] rounded-[24px] p-4">
+                        <View className="bg-[#F7F7F5] rounded-[24px] p-4">
                             <View className="flex-row justify-between items-center mb-2">
                                 <Text className="text-gray-500">Monthly limit</Text>
                                 <Text className="text-[#111] font-bold">₹{monthlyLimit}</Text>
                             </View>
-                            <View className="bg-[#E5E7EB] h-3 rounded-full overflow-hidden">
+                            <View className="bg-[#EFEAE3] h-3 rounded-full overflow-hidden">
                                 <View className="h-3 rounded-full bg-[#30D5FF]" style={{ width: `${monthlyUsageRatio}%` }} />
                             </View>
                             <Text className="text-xs text-gray-400 mt-2">
@@ -178,20 +178,20 @@ export default function ProfileScreen() {
                             </Text>
                         </View>
                         <View className="flex-row justify-between gap-3">
-                            <View className="flex-1 bg-[#F7F7F7] rounded-[24px] p-4">
+                            <View className="flex-1 bg-[#F7F7F5] rounded-[24px] p-4">
                                 <Text className="text-gray-500">Savings goal</Text>
                                 <Text className="text-[#111] font-bold text-lg mt-1">₹{savingsGoal}</Text>
-                                <View className="bg-[#E5E7EB] h-3 rounded-full overflow-hidden mt-3">
+                                <View className="bg-[#EFEAE3] h-3 rounded-full overflow-hidden mt-3">
                                     <View className="h-3 rounded-full bg-[#10B981]" style={{ width: `${savingsProgress}%` }} />
                                 </View>
                                 <Text className="text-xs text-gray-400 mt-2">
                                     {savingsGoal > 0 ? `${Math.round(savingsProgress)}% reached` : "Not set"}
                                 </Text>
                             </View>
-                            <View className="flex-1 bg-[#F7F7F7] rounded-[24px] p-4">
+                            <View className="flex-1 bg-[#F7F7F5] rounded-[24px] p-4">
                                 <Text className="text-gray-500">Debt goal</Text>
                                 <Text className="text-[#111] font-bold text-lg mt-1">₹{debtGoal}</Text>
-                                <View className="bg-[#E5E7EB] h-3 rounded-full overflow-hidden mt-3">
+                                <View className="bg-[#EFEAE3] h-3 rounded-full overflow-hidden mt-3">
                                     <View className="h-3 rounded-full bg-[#EF4444]" style={{ width: `${debtProgress}%` }} />
                                 </View>
                                 <Text className="text-xs text-gray-400 mt-2">
@@ -233,7 +233,7 @@ export default function ProfileScreen() {
         px-5
         py-4
         border
-        border-[#E5E7EB]
+        border-[#EFEAE3]
         mb-3
         "
                     >
@@ -266,7 +266,7 @@ export default function ProfileScreen() {
         px-5
         py-4
         border
-        border-[#E5E7EB]
+        border-[#EFEAE3]
         mb-3
         "
                     >
@@ -301,7 +301,7 @@ export default function ProfileScreen() {
         px-5
         py-4
         border
-        border-[#E5E7EB]
+        border-[#EFEAE3]
         "
                     >
 

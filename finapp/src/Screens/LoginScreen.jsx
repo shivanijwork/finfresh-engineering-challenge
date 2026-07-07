@@ -64,7 +64,7 @@ export default function LoginScreen() {
     return (
         <KeyboardWrapper className="flex-1 bg-[#FCFCFA]">
             <View
-                className="flex-1 px-7 pb-10"
+                className="flex-1 px-6 pb-10"
                 style={{ paddingTop: insets.top + 20 }}
             >
                 {/* BRAND EYEBROW */}

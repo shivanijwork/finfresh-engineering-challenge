@@ -13,6 +13,8 @@ import {
 import AsyncStorage
     from "@react-native-async-storage/async-storage";
 
+import { Ionicons } from "@expo/vector-icons";
+
 import {
     getSummary,
     getFinancialHealth,
@@ -556,7 +558,7 @@ mt-3
                     </View>
                 </View>
 
-                <View className="mt-6 flex-row rounded-[30px] overflow-hidden border border-[#E5E7EB]" style={cardShadow}>
+                <View className="mt-6 flex-row rounded-[30px] overflow-hidden border border-[#EFEAE3]" style={cardShadow}>
                     {dashboardTabs.map((tab) => (
                         <TouchableOpacity
                             key={tab}
@@ -585,7 +587,7 @@ mt-3
                                 </View>
                             </View>
                             <Text className="text-sm text-gray-500 mb-3">{budgetAlerts.length ? budgetAlerts[0] : "Budget status looks healthy this month."}</Text>
-                            <View className="bg-[#F3F4F6] h-3 rounded-full overflow-hidden">
+                            <View className="bg-[#F7F7F5] h-3 rounded-full overflow-hidden">
                                 <View className="h-3 rounded-full bg-[#30D5FF]" style={{ width: `${monthlyUsageRatio}%` }} />
                             </View>
                         </View>
@@ -612,12 +614,16 @@ mt-3
                     <View className="space-y-6 mt-6">
                         <View style={cardShadow} className="bg-white rounded-[30px] p-5 border border-[#EFEAE3]">
                             <View className="flex-row justify-between items-center mb-4">
-                                <View>
+                                <View className="flex-1 pr-3">
                                     <Text className="text-xl font-black">Budget overview</Text>
                                     <Text className="text-gray-500 text-sm mt-1">A focused view of your budget goals.</Text>
                                 </View>
-                                <TouchableOpacity onPress={() => setShowBudgetDetails((prev) => !prev)} className="bg-[#F3F4F6] rounded-full px-4 py-2">
-                                    <Text className="text-xs font-semibold text-[#111]">{showBudgetDetails ? "Hide details" : "Show details"}</Text>
+                                <TouchableOpacity
+                                    onPress={() => setShowBudgetDetails((prev) => !prev)}
+                                    accessibilityLabel={showBudgetDetails ? "Hide details" : "Show details"}
+                                    className="bg-[#F7F7F5] rounded-full w-10 h-10 items-center justify-center"
+                                >
+                                    <Ionicons name={showBudgetDetails ? "chevron-up" : "chevron-down"} size={20} color="#111" />
                                 </TouchableOpacity>
                             </View>
                             <View className="space-y-4">
@@ -635,7 +641,7 @@ mt-3
                                 </View>
                             </View>
                             {showBudgetDetails && (
-                                <View className="mt-5 pt-4 border-t border-[#E5E7EB] space-y-4">
+                                <View className="mt-5 pt-4 border-t border-[#EFEAE3] space-y-4">
                                     {categoryBudgetList.length > 0 ? (
                                         categoryBudgetList.map((item) => (
                                             <View key={item.category} className="space-y-2">
@@ -643,7 +649,7 @@ mt-3
                                                     <Text className="text-gray-500">{item.category}</Text>
                                                     <Text className="font-semibold">₹{item.limit}</Text>
                                                 </View>
-                                                <View className="bg-[#F3F4F6] h-2 rounded-full overflow-hidden">
+                                                <View className="bg-[#F7F7F5] h-2 rounded-full overflow-hidden">
                                                     <View
                                                         className={`h-2 rounded-full ${item.ratio >= 80 ? "bg-[#F97316]" : "bg-[#30D5FF]"}`}
                                                         style={{ width: `${item.ratio}%` }}
@@ -670,7 +676,7 @@ mt-3
                                         <Text className="text-gray-500 text-sm">{history[0].label}</Text>
                                         <Text className="text-sm font-semibold text-[#111]">₹{history[0].expense}</Text>
                                     </View>
-                                    <View className="bg-[#F3F4F6] h-3 rounded-full overflow-hidden mt-1 mb-1">
+                                    <View className="bg-[#F7F7F5] h-3 rounded-full overflow-hidden mt-1 mb-1">
                                         <View className="h-3 rounded-full bg-[#30D5FF]" style={{ width: `${history[0].monthlyLimit > 0 ? Math.min((history[0].expense / history[0].monthlyLimit) * 100, 100) : 0}%` }} />
                                     </View>
                                     <Text className="text-xs text-gray-400">Income ₹{history[0].income} · Savings ₹{history[0].savings}</Text>

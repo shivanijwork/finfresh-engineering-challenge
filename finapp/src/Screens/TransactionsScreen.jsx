@@ -173,7 +173,7 @@ export default function TransactionsScreen() {
 
     if (loading) {
         return (
-            <View className="flex-1 justify-center items-center bg-[#F7F8FA]">
+            <View className="flex-1 justify-center items-center bg-[#F7F7F5]">
                 <ActivityIndicator size="large" color="#f97316" />
                 <Text className="mt-3">Loading transactions...</Text>
             </View>
@@ -206,7 +206,7 @@ export default function TransactionsScreen() {
                                 className={`py-2 px-4 rounded-full ${
                                     filters.type === type.value
                                         ? "bg-[#30D5FF]"
-                                        : "bg-[#F3F4F6]"
+                                        : "bg-[#F7F7F5]"
                                 }`}
                             >
                                 <Text
@@ -231,7 +231,7 @@ export default function TransactionsScreen() {
                                 className={`py-2 px-4 rounded-full ${
                                     filters.category === category
                                         ? "bg-[#30D5FF]"
-                                        : "bg-[#F3F4F6]"
+                                        : "bg-[#F7F7F5]"
                                 }`}
                             >
                                 <Text
@@ -251,7 +251,7 @@ export default function TransactionsScreen() {
                     <View className="flex-row gap-2 mb-4">
                         <TouchableOpacity
                             onPress={() => setShowStartPicker(true)}
-                            className="flex-1 bg-[#F3F4F6] rounded-[30px] px-4 py-3"
+                            className="flex-1 bg-[#F7F7F5] rounded-[30px] px-4 py-3"
                         >
                             <Text className="text-gray-700">From</Text>
                             <Text className="text-[#111] font-semibold mt-1">
@@ -260,7 +260,7 @@ export default function TransactionsScreen() {
                         </TouchableOpacity>
                         <TouchableOpacity
                             onPress={() => setShowEndPicker(true)}
-                            className="flex-1 bg-[#F3F4F6] rounded-[30px] px-4 py-3"
+                            className="flex-1 bg-[#F7F7F5] rounded-[30px] px-4 py-3"
                         >
                             <Text className="text-gray-700">To</Text>
                             <Text className="text-[#111] font-semibold mt-1">
@@ -299,15 +299,15 @@ export default function TransactionsScreen() {
                 <View className="bg-white rounded-[30px] p-5 mb-6 border border-[#EFEAE3]">
                     <Text className="text-gray-500 mb-4">Filtered totals</Text>
                     <View className="flex-row justify-between gap-2">
-                        <View className="flex-1 bg-[#F7F7F7] rounded-[24px] p-4 mr-1">
+                        <View className="flex-1 bg-[#F7F7F5] rounded-[24px] p-4 mr-1">
                             <Text className="text-gray-500 text-sm">Income</Text>
                             <Text className="text-[#111] font-bold text-lg">₹{filteredTotals.income}</Text>
                         </View>
-                        <View className="flex-1 bg-[#F7F7F7] rounded-[24px] p-4 mx-1">
+                        <View className="flex-1 bg-[#F7F7F5] rounded-[24px] p-4 mx-1">
                             <Text className="text-gray-500 text-sm">Expense</Text>
                             <Text className="text-[#111] font-bold text-lg">₹{filteredTotals.expense}</Text>
                         </View>
-                        <View className="flex-1 bg-[#F7F7F7] rounded-[24px] p-4 ml-1">
+                        <View className="flex-1 bg-[#F7F7F5] rounded-[24px] p-4 ml-1">
                             <Text className="text-gray-500 text-sm">Net</Text>
                             <Text className="text-[#111] font-bold text-lg">₹{filteredTotals.income - filteredTotals.expense}</Text>
                         </View>

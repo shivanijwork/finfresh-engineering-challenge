@@ -104,7 +104,7 @@ export default function EditProfileScreen() {
                             <TextInput
                                 value={formData.name}
                                 onChangeText={(text) => handleChange("name", text)}
-                                className="bg-white rounded-[24px] px-4 py-4 border border-[#E5E7EB] text-[#111]"
+                                className="bg-white rounded-[24px] px-4 py-4 border border-[#EFEAE3] text-[#111]"
                                 placeholder="Your name"
                                 placeholderTextColor="#9CA3AF"
                             />
@@ -114,7 +114,7 @@ export default function EditProfileScreen() {
                             <TextInput
                                 value={formData.email}
                                 onChangeText={(text) => handleChange("email", text)}
-                                className="bg-white rounded-[24px] px-4 py-4 border border-[#E5E7EB] text-[#111]"
+                                className="bg-white rounded-[24px] px-4 py-4 border border-[#EFEAE3] text-[#111]"
                                 placeholder="you@email.com"
                                 placeholderTextColor="#9CA3AF"
                                 keyboardType="email-address"

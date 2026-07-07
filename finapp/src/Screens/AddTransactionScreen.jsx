@@ -271,7 +271,7 @@ export default function AddTransactionScreen() {
                 <View
                     className="
 px-6
-pt-14
+pt-16
 pb-24
 "
                 >

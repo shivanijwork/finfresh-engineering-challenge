@@ -156,7 +156,7 @@ export default function BudgetGoalsScreen() {
         const numericTarget = Number(target) || 0;
         const ratio = numericTarget > 0 ? Math.min((numericValue / numericTarget) * 100, 100) : 0;
         return (
-            <View className="bg-[#F3F4F6] rounded-full h-3 overflow-hidden mt-2">
+            <View className="bg-[#F7F7F5] rounded-full h-3 overflow-hidden mt-2">
                 <View className="h-3 rounded-full bg-[#30D5FF]" style={{ width: `${ratio}%` }} />
             </View>
         );
@@ -192,7 +192,7 @@ export default function BudgetGoalsScreen() {
                                                         <TouchableOpacity
                                                             key={option}
                                                             onPress={() => setGoal(item.key, option.toString())}
-                                                            className={`rounded-full px-3 py-2 border ${goals[item.key] === option.toString() ? "border-[#30D5FF] bg-[#EFF6FF]" : "border-[#E5E7EB] bg-[#F7F7F7]"}`}
+                                                            className={`rounded-full px-3 py-2 border ${goals[item.key] === option.toString() ? "border-[#30D5FF] bg-[#EFF6FF]" : "border-[#EFEAE3] bg-[#F7F7F5]"}`}
                                                         >
                                                             <Text className={`text-sm font-semibold ${goals[item.key] === option.toString() ? "text-[#111]" : "text-[#666]"}`}>
                                                                 {option}
@@ -200,7 +200,7 @@ export default function BudgetGoalsScreen() {
                                                         </TouchableOpacity>
                                                     ))}
                                                 </View>
-                                                <View className="bg-[#F7F7F7] rounded-[24px] px-4 py-4 border border-[#E5E7EB]">
+                                                <View className="bg-[#F7F7F5] rounded-[24px] px-4 py-4 border border-[#EFEAE3]">
                                                     <TextInput
                                                         value={goals[item.key]}
                                                         onChangeText={(text) => setGoal(item.key, text)}
@@ -221,7 +221,7 @@ export default function BudgetGoalsScreen() {
                                                 keyboardType="numeric"
                                                 placeholder={item.placeholder}
                                                 placeholderTextColor="#9CA3AF"
-                                                className="bg-[#F7F7F7] rounded-[24px] px-4 py-4 text-[#111] border border-[#E5E7EB]"
+                                                className="bg-[#F7F7F5] rounded-[24px] px-4 py-4 text-[#111] border border-[#EFEAE3]"
                                             />
                                         )}
                                     </View>
@@ -233,7 +233,7 @@ export default function BudgetGoalsScreen() {
                                         onChangeText={(text) => setGoal("debtPayoffDate", text)}
                                         placeholder="YYYY-MM-DD"
                                         placeholderTextColor="#9CA3AF"
-                                        className="bg-[#F7F7F7] rounded-[24px] px-4 py-4 text-[#111] border border-[#E5E7EB]"
+                                        className="bg-[#F7F7F5] rounded-[24px] px-4 py-4 text-[#111] border border-[#EFEAE3]"
                                     />
                                 </View>
                             </View>
@@ -256,14 +256,14 @@ export default function BudgetGoalsScreen() {
                                 ) : (
                                     <Text className="text-gray-400">No category budgets yet.</Text>
                                 )}
-                                <View className="mt-4 border-t border-[#E5E7EB] pt-4">
+                                <View className="mt-4 border-t border-[#EFEAE3] pt-4">
                                     <Text className="text-gray-500 mb-2">Add category budget</Text>
                                     <TextInput
                                         value={newCategory}
                                         onChangeText={setNewCategory}
                                         placeholder="Category name"
                                         placeholderTextColor="#9CA3AF"
-                                        className="bg-[#F7F7F7] rounded-[24px] px-4 py-4 text-[#111] border border-[#E5E7EB] mb-3"
+                                        className="bg-[#F7F7F5] rounded-[24px] px-4 py-4 text-[#111] border border-[#EFEAE3] mb-3"
                                     />
                                     <TextInput
                                         value={newCategoryAmount}
@@ -271,7 +271,7 @@ export default function BudgetGoalsScreen() {
                                         placeholder="Budget amount"
                                         placeholderTextColor="#9CA3AF"
                                         keyboardType="numeric"
-                                        className="bg-[#F7F7F7] rounded-[24px] px-4 py-4 text-[#111] border border-[#E5E7EB] mb-3"
+                                        className="bg-[#F7F7F5] rounded-[24px] px-4 py-4 text-[#111] border border-[#EFEAE3] mb-3"
                                     />
                                     <TouchableOpacity
                                         onPress={handleAddCategory}

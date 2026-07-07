@@ -3,6 +3,7 @@ import {
     Text,
     TouchableOpacity,
     ScrollView,
+    useWindowDimensions,
 } from "react-native";
 
 import {
@@ -26,6 +27,11 @@ import {
 export default function HomeScreen() {
 
     const navigation = useNavigation();
+
+    // Responsive scale: adapts font sizes to screen width (clamped for tiny/large devices)
+    const { width } = useWindowDimensions();
+    const scale = Math.min(Math.max(width / 375, 0.85), 1.2);
+    const f = (n) => Math.round(n * scale);
 
     const [user, setUser] =
         useState(null);
@@ -231,23 +237,19 @@ font-semibold
 
 
                 <Text
+                    style={{ fontSize: f(44), lineHeight: f(52) }}
                     className="
-text-[48px]
 font-black
-leading-[56px]
 text-[#111]
 "
                 >
-                    Your Money,
-                    {"\n"}
-                    Reimagined
+                    Your Money, Reimagined
                 </Text>
 
 
                 <Text
+                    style={{ fontSize: f(16), lineHeight: f(28) }}
                     className="
-text-[17px]
-leading-8
 text-gray-500
 mt-6
 "
@@ -298,8 +300,8 @@ mt-20
             >
 
                 <Text
+                    style={{ fontSize: f(24) }}
                     className="
-text-2xl
 font-black
 mb-8
 text-[#111]
@@ -377,8 +379,8 @@ font-black
 
 
                             <Text
+                                style={{ fontSize: f(21) }}
                                 className="
-text-[22px]
 font-bold
 mt-5
 text-[#111]

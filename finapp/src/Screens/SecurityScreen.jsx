@@ -77,7 +77,7 @@ export default function SecurityScreen() {
                         <TextInput
                             value={password}
                             onChangeText={setPassword}
-                            className="bg-white rounded-[24px] px-4 py-4 border border-[#E5E7EB] text-[#111]"
+                            className="bg-white rounded-[24px] px-4 py-4 border border-[#EFEAE3] text-[#111]"
                             placeholder="New password"
                             placeholderTextColor="#9CA3AF"
                             secureTextEntry
@@ -88,7 +88,7 @@ export default function SecurityScreen() {
                         <TextInput
                             value={confirmPassword}
                             onChangeText={setConfirmPassword}
-                            className="bg-white rounded-[24px] px-4 py-4 border border-[#E5E7EB] text-[#111]"
+                            className="bg-white rounded-[24px] px-4 py-4 border border-[#EFEAE3] text-[#111]"
                             placeholder="Confirm password"
                             placeholderTextColor="#9CA3AF"
                             secureTextEntry
